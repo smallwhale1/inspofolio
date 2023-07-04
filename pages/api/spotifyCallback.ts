@@ -3,6 +3,7 @@ import type { NextApiRequest, NextApiResponse } from "next";
 import axios from "axios";
 import queryString from "querystring";
 import { SpotifyInterface } from "@/util/interfaces";
+import { callbackUri } from "@/util/constants";
 
 type APIError = {
   message: string;
@@ -12,7 +13,6 @@ export default async function handler(
   req: NextApiRequest,
   res: NextApiResponse<SpotifyInterface | string>
 ) {
-  const redirect_uri = "http://localhost:3000/api/spotifyCallback";
   const { code } = req.query;
 
   const authOptions = {
@@ -20,7 +20,7 @@ export default async function handler(
     method: "post",
     data: queryString.stringify({
       code: code,
-      redirect_uri: redirect_uri,
+      redirect_uri: callbackUri,
       grant_type: "authorization_code",
     }),
     headers: {

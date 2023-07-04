@@ -1,12 +1,12 @@
 import { Button } from "@mui/material";
 import React from "react";
 import queryString from "query-string";
+import { callbackUri } from "@/util/constants";
 
 type Props = {};
 
 const scope =
   "streaming app-remote-control user-read-private user-read-email playlist-read-private playlist-modify-private user-top-read user-read-recently-played user-library-modify user-library-read";
-const callbackUri = "http://localhost:3000/api/spotifyCallback";
 
 const LinkSpotify = (props: Props) => {
   return (
