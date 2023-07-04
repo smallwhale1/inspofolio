@@ -1,0 +1,167 @@
+@mixin transform($transform) {
+  -webkit-transform: $transform;
+  -moz-transform: $transform;
+  transform: $transform;
+}
+@mixin animation($animation) {
+  -webkit-animation: $animation;
+  -moz-animation: $animation;
+  animation: $animation;
+}
+@mixin keyframes($name, $name1) {
+  @-webkit-keyframes #{$name} {
+    @content;
+  }
+  @-moz-keyframes #{$name} {
+    @content;
+  }
+  @-ms-keyframes #{$name} {
+    @content;
+  }
+  @keyframes #{$name} {
+    @content;
+  }
+}
+@mixin opacity($opacity) {
+  -webkit-opacity: $opacity;
+  -moz-opacity: $opacity;
+  opacity: $opacity;
+}
+@mixin border-radius($radius) {
+  -webkit-border-radius: $radius;
+  -moz-border-radius: $radius;
+  border-radius: $radius;
+}
+
+// variables
+$size: 60px;
+$primary-color: rgb(68, 199, 255);
+
+// cube only
+.cubeFolding {
+  width: $size;
+  height: $size;
+  display: inline-block;
+  @include transform(rotate(45deg));
+  font-size: 0;
+  span {
+    position: relative;
+    width: $size / 3;
+    height: $size / 3;
+    @include transform(scale(1.1));
+    display: inline-block;
+    &::before {
+      content: "";
+      position: absolute;
+      left: 0;
+      top: 0;
+      display: block;
+      width: $size / 3;
+      height: $size / 3;
+      -moz-transform-origin: 100% 100%;
+      -ms-transform-origin: 100% 100%;
+      -webkit-transform-origin: 100% 100%;
+      transform-origin: 100% 100%;
+      @include animation(folding 5.7s infinite linear both);
+    }
+  }
+
+  .leaf1 {
+    @include transform(rotateZ(0deg) scale(1.1));
+    &::before {
+      background-color: #ff5f64;
+    }
+  }
+
+  .leaf2 {
+    @include transform(rotateZ(0deg) scale(1.1));
+    &::before {
+      -webkit-animation-delay: 0.3s;
+      animation-delay: 0.3s;
+      background-color: darken($primary-color, 5%);
+      background-color: #ff5fc4;
+    }
+  }
+  .leaf3 {
+    @include transform(rotateZ(0deg) scale(1.1));
+    &::before {
+      -webkit-animation-delay: 0.6s;
+      animation-delay: 0.6s;
+      background-color: darken($primary-color, 10%);
+      background-color: #f25fff;
+    }
+  }
+  .leaf6 {
+    @include transform(rotateZ(90deg) scale(1.1));
+    &::before {
+      -webkit-animation-delay: 0.9s;
+      animation-delay: 0.9s;
+      background-color: darken($primary-color, 25%);
+      background-color: #c45fff;
+    }
+  }
+  .leaf9 {
+    @include transform(rotateZ(90deg) scale(1.1));
+    &::before {
+      -webkit-animation-delay: 1.2s;
+      animation-delay: 1.2s;
+      background-color: darken($primary-color, 40%);
+      background-color: #975fff;
+    }
+  }
+  .leaf8 {
+    @include transform(rotateZ(180deg) scale(1.1));
+    &::before {
+      -webkit-animation-delay: 1.5s;
+      animation-delay: 1.5s;
+      background-color: darken($primary-color, 35%);
+      background-color: #6f5fff;
+    }
+  }
+  .leaf7 {
+    @include transform(rotateZ(180deg) scale(1.1));
+    &::before {
+      -webkit-animation-delay: 1.8s;
+      animation-delay: 1.8s;
+      background-color: darken($primary-color, 30%);
+      background-color: #5f7aff;
+    }
+  }
+  .leaf4 {
+    @include transform(rotateZ(-90deg) scale(1.1));
+    &::before {
+      -webkit-animation-delay: 2.1s;
+      animation-delay: 2.1s;
+      background-color: darken($primary-color, 15%);
+      background-color: #5faaff;
+    }
+  }
+  .leaf5 {
+    @include transform(rotateZ(0deg) scale(1.1));
+    &::before {
+      -webkit-animation-delay: 2.4s;
+      animation-delay: 2.4s;
+      background-color: darken($primary-color, 20%);
+      background-color: #5fccff;
+    }
+  }
+}
+
+// animation
+@include keyframes(folding, folding animation) {
+  0%,
+  10% {
+    @include transform(perspective(140px) rotateX(-180deg));
+    @include opacity(0);
+  }
+  25%,
+  75% {
+    @include transform(perspective(140px) rotateX(0deg));
+    @include opacity(1);
+  }
+  90%,
+  100% {
+    @include transform(perspective(140px) rotateY(180deg));
+    @include opacity(0);
+  }
+}

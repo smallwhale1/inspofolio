@@ -1,0 +1,12 @@
+.main {
+  height: 100vh;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  transition: opacity ease;
+  opacity: 1;
+}
+
+.fadeOut {
+  opacity: 0;
+}

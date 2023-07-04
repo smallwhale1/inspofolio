@@ -1,0 +1,8 @@
+.fadePage {
+  transition: opacity 0.5s ease;
+  opacity: 0;
+}
+
+.pageVisible {
+  opacity: 1;
+}

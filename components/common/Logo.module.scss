@@ -1,0 +1,33 @@
+.logo {
+  color: #ffffff;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 0.5rem;
+  font-size: 1.8rem;
+  letter-spacing: 1px;
+}
+
+.animationWrapper {
+  animation: flip 0.5s ease infinite alternate;
+}
+
+@keyframes bob {
+  0% {
+    transform: translateY(-25%);
+  }
+
+  100% {
+    transform: translateY(25%);
+  }
+}
+
+@keyframes flip {
+  0% {
+    transform: scaleX(0);
+  }
+
+  100% {
+    transform: scaleX(1);
+  }
+}

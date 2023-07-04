@@ -1,0 +1,19 @@
+@import "../../styles/variables";
+
+.topbar {
+  height: $navbarHeight;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 0 $horizontalPadding;
+
+  .navbarBtns {
+    display: flex;
+    align-items: center;
+    gap: 2rem;
+    list-style-type: none;
+
+    .btnItem {
+    }
+  }
+}

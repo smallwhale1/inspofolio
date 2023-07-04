@@ -1,0 +1,145 @@
+@import "../variables";
+
+.main {
+  min-height: 100vh;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  position: relative;
+  padding: 0 $horizontalPadding;
+  overflow: hidden;
+  transition: opacity ease;
+  opacity: 1;
+
+  .bgImg {
+    z-index: 0;
+    position: absolute;
+    object-fit: cover;
+    transition: opacity 1s ease;
+    opacity: 0;
+    animation: scaleAnimation 5s ease infinite alternate;
+  }
+
+  .fadeIn {
+    opacity: 1;
+  }
+
+  .overlay {
+    background: linear-gradient(to right, #270310, #2709032f);
+    z-index: 0;
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    transition: opacity 1s ease;
+    opacity: 0;
+  }
+
+  .fadeInHalf {
+    opacity: 0.5;
+  }
+
+  .content {
+    min-width: 80vw;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 3rem;
+    z-index: 1;
+
+    .left {
+      color: #ffffff;
+      flex: 1;
+      height: 100%;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: flex-start;
+      gap: 1rem;
+      transform: translateY(40px);
+      transition: opacity 1s ease, transform 1s ease;
+      opacity: 0;
+
+      .description {
+        font-size: 1.2rem;
+      }
+    }
+
+    .fadeInBottom {
+      opacity: 1;
+      transform: translateY(0);
+    }
+
+    .right {
+      background-color: #ffffff;
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      gap: 1.5rem;
+      padding: 3rem;
+      max-width: 550px;
+      min-width: 400px;
+      border-radius: 1rem;
+
+      h2 {
+        font-size: 2rem;
+      }
+
+      .orDelimitter {
+        position: relative;
+        display: flex;
+        justify-content: center;
+        margin: 1rem 0;
+
+        .delimitter {
+          border: 1px solid #dedede;
+          position: absolute;
+          width: 100%;
+          top: 50%;
+          left: 0;
+        }
+
+        span {
+          color: #8b8b8b;
+          background-color: #ffffff;
+          position: relative;
+          padding: 0 1rem;
+        }
+      }
+
+      .iconBtn {
+        display: flex;
+        align-items: center;
+        gap: 1rem;
+      }
+    }
+  }
+}
+
+.exiting {
+  opacity: 0;
+}
+
+@keyframes scaleAnimation {
+  0% {
+    transform: scale(1);
+  }
+  100% {
+    transform: scale(1.05);
+  }
+}
+
+@media (max-width: 750px) {
+  .main {
+    .content {
+      flex-direction: column;
+      justify-content: center;
+
+      .right {
+        min-width: 0;
+        width: 95vw;
+      }
+    }
+  }
+}
