@@ -26,6 +26,8 @@ const auth = () => {
   const [isResponsive, setIsResponsive] = useState(false);
   const [authType, setAuthType] = useState<AuthType>(AuthType.SIGNUP);
   const [exiting, setExiting] = useState(false);
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
   const nextRoute = useRef<string>("/");
   const router = useRouter();
   const theme = useTheme();
@@ -50,6 +52,36 @@ const auth = () => {
     } else {
       nextRoute.current = "/create?firsttime=true&guest=true";
       setExiting(true);
+    }
+  };
+
+  const handleEmailSignIn = async () => {
+    if (email === "" || password === "") {
+      // toast message
+      return;
+    }
+    if (authType === AuthType.LOGIN) {
+      const res = AuthManager.signInEmailPassword(email, password);
+      if (typeof res === "string") {
+        // error occured, toast messgae
+      } else {
+        router.push("/dashboard");
+      }
+    } else {
+      const res = await AuthManager.signUpEmailPassword(email, password);
+      if (typeof res === "string") {
+        // error occured, toast messgae
+      } else {
+        const signInRes = await AuthManager.signInEmailPassword(
+          email,
+          password
+        );
+        if (typeof signInRes === "string") {
+          // error occured, toast messgae
+        } else {
+          router.push("/create?firsttime=true");
+        }
+      }
     }
   };
 
@@ -143,12 +175,26 @@ const auth = () => {
               <Tab value={AuthType.SIGNUP} label="sign up"></Tab>
               <Tab value={AuthType.LOGIN} label="login"></Tab>
             </Tabs>
-            <TextField label="Email" />
-            <TextField label="Password" />
+            <TextField
+              type="email"
+              label="Email"
+              value={email}
+              onChange={(e) => {
+                setEmail(e.target.value);
+              }}
+            />
+            <TextField
+              type="password"
+              label="Password"
+              value={password}
+              onChange={(e) => {
+                setPassword(e.target.value);
+              }}
+            />
             <Button
               variant="contained"
               onClick={() => {
-                router.push("/create");
+                handleEmailSignIn();
               }}
               color="secondary"
             >

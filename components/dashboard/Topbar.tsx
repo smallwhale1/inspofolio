@@ -19,7 +19,10 @@ const Topbar = (props: TopbarProps) => {
   };
 
   return (
-    <nav className={styles.topbar}>
+    <nav
+      className={styles.topbar}
+      style={{ backgroundColor: theme.palette.bgColor.main }}
+    >
       <Logo color={theme.palette.textColor.main} fontSize={navbarLogoSize} />
       <ul className={styles.navbarBtns}>
         <li className={styles.btnItem}>

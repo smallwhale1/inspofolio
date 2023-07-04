@@ -21,11 +21,12 @@ export default function Home() {
     setTimeout(() => {
       setExiting(true);
       setTimeout(() => {
-        if (user) {
-          router.push("/dashboard");
-        } else {
-          router.push("/auth");
-        }
+        router.push("/linkSpotify");
+        // if (user) {
+        //   router.push("/dashboard");
+        // } else {
+        //   router.push("/auth");
+        // }
       }, animationDuration * 1000);
     }, delay * 1000);
   }, [user, loading]);

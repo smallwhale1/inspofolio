@@ -6,19 +6,19 @@ import { uid } from "uid";
 export class StorageManager {
   static uploadImages = async (imgs: ImageData[], userId: string) => {
     try {
-      let downloadUrls: string[] = [];
-      for (const img of imgs) {
-        const storageRef = ref(storage, `${userId}/${uid()}`);
-        const snapshot = await uploadBytes(storageRef, img.file);
-        const fullPath = storageRef.fullPath;
-        console.log(fullPath);
-        const downloadUrl = await getDownloadURL(storageRef);
-        console.log(downloadUrl);
-        downloadUrls.push(downloadUrl);
-      }
-      return downloadUrls;
+      const responses = await Promise.all(
+        imgs.map((img) => this.uploadSingleImg(img, userId))
+      );
+      return responses;
     } catch (err) {
       console.log(err);
     }
+  };
+
+  static uploadSingleImg = async (img: ImageData, userId: string) => {
+    const storageRef = ref(storage, `${userId}/${uid()}`);
+    const snapshot = await uploadBytes(storageRef, img.file);
+    const downloadUrl = await getDownloadURL(storageRef);
+    return downloadUrl;
   };
 }

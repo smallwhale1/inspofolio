@@ -5,12 +5,7 @@ import Topbar from "./Topbar";
 type Props = {};
 
 const Layout = (props: Props) => {
-  return (
-    <div>
-      <Topbar />
-      <Sidebar />
-    </div>
-  );
+  return <div></div>;
 };
 
 export default Layout;

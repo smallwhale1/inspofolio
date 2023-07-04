@@ -1,0 +1,31 @@
+@import "../../styles/variables";
+
+.projects {
+  flex-grow: 1;
+  padding: 0 $horizontalPadding;
+  display: flex;
+  flex-direction: column;
+
+  .projectsHeading {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+  }
+
+  .main {
+    flex-grow: 1;
+    width: 100%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+  }
+
+  .projectsGrid {
+    align-self: flex-start;
+    width: 100%;
+    margin: 2rem 0;
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+    gap: 3rem;
+  }
+}

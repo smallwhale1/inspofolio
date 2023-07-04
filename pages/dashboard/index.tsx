@@ -1,5 +1,5 @@
 import styles from "../../styles/dashboard/dashboard.module.scss";
-import Dashboards from "@/components/dashboard/Dashboards";
+import Projects from "@/components/dashboard/Projects";
 import Topbar from "@/components/dashboard/Topbar";
 import { AuthContext } from "@/contexts/AuthContext";
 import { useTheme } from "@mui/material";
@@ -22,8 +22,6 @@ const Dashboard = (props: Props) => {
   const { user } = useContext(AuthContext);
   useEffect(() => {
     if (user) {
-      console.log(user.uid);
-      console.log(user.email);
     }
   }, []);
   return (
@@ -32,7 +30,7 @@ const Dashboard = (props: Props) => {
       style={{ backgroundColor: theme.palette.bgColor.main }}
     >
       <Topbar />
-      <Dashboards />
+      <Projects />
     </div>
   );
 };

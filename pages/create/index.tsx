@@ -47,7 +47,7 @@ const create = () => {
     links: [],
     tags: [],
   });
-  const { user, loading } = useContext(AuthContext);
+  const { user } = useContext(AuthContext);
   const [animationState, setAnimationState] = useState<AnimationState>(
     AnimationState.CENTER
   );
@@ -62,6 +62,11 @@ const create = () => {
     setSubmitting(true);
     const res = await ProjectsManager.addProject(project, user.uid);
     setSubmitting(false);
+    if (router.query.firsttime) {
+      router.push("/linkSpotify");
+    } else {
+      router.push("/dashboard");
+    }
   };
 
   const getAnimationClass = () => {

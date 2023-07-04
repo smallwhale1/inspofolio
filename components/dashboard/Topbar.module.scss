@@ -1,6 +1,10 @@
 @import "../../styles/variables";
 
 .topbar {
+  flex-shrink: 0;
+  position: sticky;
+  top: 0;
+  z-index: 999;
   height: $navbarHeight;
   display: flex;
   justify-content: space-between;

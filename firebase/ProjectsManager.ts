@@ -1,12 +1,20 @@
 import { db } from "@/config/firebase";
 import { Link, Project } from "@/models/models";
 import { CreateProject } from "@/util/interfaces";
-import { addDoc, collection, getDocs, query, where } from "firebase/firestore";
+import {
+  addDoc,
+  collection,
+  getDocs,
+  orderBy,
+  query,
+  serverTimestamp,
+  where,
+} from "firebase/firestore";
 import { StorageManager } from "./StorageManager";
 
 // the only difference between this and Project is _id
 interface AddProject {
-  userId: string;
+  uid: string;
   name: string;
   description: string;
   imageUrls: string[];
@@ -25,7 +33,7 @@ export class ProjectsManager {
       if (!downloadUrls) return;
 
       const newProject: AddProject = {
-        userId: uid,
+        uid,
         name: project.name,
         description: project.description,
         // placeholder before handling image upload
@@ -38,13 +46,18 @@ export class ProjectsManager {
       };
 
       const projectRef = await addDoc(collection(db, "projects"), newProject);
-      return { ...newProject, _id: projectRef.id } as Project;
+      return {
+        ...newProject,
+        _id: projectRef.id,
+        createdAt: new Date(),
+      } as Project;
     } catch (err) {
       console.log(err);
     }
   };
 
   static getProjects = async (uid: string): Promise<Project[]> => {
+    console.log("hi");
     const q = query(collection(db, "projects"), where("uid", "==", uid));
     const projectsSnapshot = await getDocs(q);
     const projects: Project[] = projectsSnapshot.docs.map(

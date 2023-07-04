@@ -1,8 +1,8 @@
 import styles from "./Sidebar.module.scss";
-import { useTheme } from "@mui/material";
 import Logo from "../common/Logo";
-import { navbarLogoSize } from "@/util/constants";
 import Link from "next/link";
+import { useTheme } from "@mui/material";
+import { navbarLogoSize } from "@/util/constants";
 import { useRouter } from "next/router";
 
 type Props = {};

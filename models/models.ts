@@ -1,4 +1,5 @@
 import { LinkType } from "@/util/enums";
+import { Timestamp } from "firebase/firestore";
 
 // sub interfaces
 export interface Link {
@@ -24,7 +25,7 @@ export interface Palette {}
 // main
 export interface Project {
   _id: string;
-  userId: string;
+  uid: string;
   name: string;
   description: string;
   imageUrls: string[];
@@ -32,12 +33,13 @@ export interface Project {
   tags: string[];
   links: Link[];
   playlists: string[];
+  createdAt: Date;
   shared: boolean;
 }
 
 export interface UserInfo {
   _id: string;
-  userId: string;
+  uid: string;
   spotifyAccount: string;
   projectIds: string[];
 }
