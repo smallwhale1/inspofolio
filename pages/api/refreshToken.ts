@@ -2,8 +2,7 @@
 import type { NextApiRequest, NextApiResponse } from "next";
 import axios from "axios";
 import queryString from "querystring";
-import { SpotifyInterface } from "@/util/interfaces";
-import { callbackUri } from "@/util/constants";
+import { SpotifyRefresh } from "@/util/interfaces";
 
 type APIError = {
   message: string;
@@ -11,18 +10,18 @@ type APIError = {
 
 export default async function handler(
   req: NextApiRequest,
-  res: NextApiResponse<SpotifyInterface | string>
+  res: NextApiResponse<SpotifyRefresh | string>
 ) {
-  const { code } = req.query;
+  const { refreshToken } = req.query;
 
   const authOptions = {
     url: "https://accounts.spotify.com/api/token",
     method: "post",
     data: queryString.stringify({
-      code: code,
-      redirect_uri: callbackUri,
-      grant_type: "authorization_code",
+      refresh_token: refreshToken,
+      grant_type: "refresh_token",
     }),
+    json: true,
     headers: {
       Authorization:
         "Basic " +
@@ -37,11 +36,8 @@ export default async function handler(
 
   try {
     const response = await axios(authOptions);
-    const data = response.data;
-    const accessToken = data.access_token;
-    console.log(response.data);
 
-    return res.status(200).json(response.data as SpotifyInterface);
+    return res.status(200).json(response.data as SpotifyRefresh);
   } catch (err) {
     console.log(err);
     return res.status(500).json("An unexpected error occured");

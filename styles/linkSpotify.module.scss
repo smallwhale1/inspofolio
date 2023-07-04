@@ -1,3 +1,22 @@
+@import "../styles/variables";
+
 .linkSpotify {
   height: 100vh;
+  padding: 8rem;
+  display: flex;
+  flex-direction: column;
+  gap: 2rem;
+
+  .btnContainer {
+    display: flex;
+    gap: 1rem;
+  }
+}
+
+@media (max-width: 750px) {
+  .linkSpotify {
+    padding: 2rem;
+    justify-content: center;
+    align-items: center;
+  }
 }

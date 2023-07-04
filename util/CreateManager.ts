@@ -15,6 +15,7 @@ export class CreateManager {
         ...acceptedFiles.map((file, i) => ({
           _id: ListManager.getNewId(prev.imgs, i),
           file,
+          colors: [],
           previewUrl: URL.createObjectURL(file),
         })),
       ],

@@ -1,0 +1,11 @@
+.sectionTop {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 1rem 0;
+
+  .sectionHeading {
+    text-transform: capitalize;
+    font-weight: 600;
+  }
+}

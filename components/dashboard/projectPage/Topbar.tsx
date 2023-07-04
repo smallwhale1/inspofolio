@@ -1,23 +1,21 @@
+import { Button, IconButton, useTheme } from "@mui/material";
 import styles from "./Topbar.module.scss";
-import { IconButton, useTheme } from "@mui/material";
-import Logo from "../common/Logo";
-import { RxExit } from "react-icons/rx";
-import { BiUser } from "react-icons/bi";
-import { AuthManager } from "@/firebase/AuthManager";
-import { useRouter } from "next/router";
 import { navbarLogoSize } from "@/util/constants";
+import Logo from "@/components/common/Logo";
+import { BiUser } from "react-icons/bi";
+import { RxExit } from "react-icons/rx";
+import { useRouter } from "next/router";
+import { AuthManager } from "@/firebase/AuthManager";
 
-interface TopbarProps {}
+type Props = {};
 
-const Topbar = ({}: TopbarProps) => {
+const Topbar = (props: Props) => {
   const theme = useTheme();
   const router = useRouter();
-
   const handleSignOut = async () => {
     await AuthManager.signOut();
     router.push("/auth");
   };
-
   return (
     <nav
       className={styles.topbar}
@@ -25,8 +23,6 @@ const Topbar = ({}: TopbarProps) => {
         backgroundColor: theme.palette.bgColor.main,
       }}
     >
-      <Logo color={theme.palette.textColor.main} fontSize={navbarLogoSize} />
-
       <ul className={styles.navbarBtns}>
         <li className={styles.btnItem}>
           <IconButton>

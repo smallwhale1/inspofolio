@@ -7,7 +7,7 @@ import Image from "next/image";
 import AuthGuardedLayout from "@/components/common/authGuarded/_layout";
 import { useTheme } from "@mui/material";
 import { useRouter } from "next/router";
-import { ReactNode, useContext, useEffect, useState } from "react";
+import { ReactNode, useContext, useEffect, useRef, useState } from "react";
 import { Playfair_Display } from "next/font/google";
 import { BsArrowRightCircle } from "react-icons/bs";
 import { fadeDuration } from "@/util/constants";
@@ -61,11 +61,17 @@ const create = () => {
     if (!user) return;
     setSubmitting(true);
     const res = await ProjectsManager.addProject(project, user.uid);
-    setSubmitting(false);
-    if (router.query.firsttime) {
-      router.push("/linkSpotify");
+    if (typeof res === "string") {
+      // toast message
+      console.log(res);
     } else {
-      router.push("/dashboard");
+      setSubmitting(false);
+      const accessToken = localStorage.getItem("access_token");
+      if (accessToken) {
+        router.push(`/dashboard/${res._id}`);
+      } else {
+        router.push(`/linkSpotify?createdProject=${res._id}`);
+      }
     }
   };
 
@@ -183,9 +189,9 @@ const create = () => {
       ),
     },
     {
-      label: "Add tags (up to 5).",
+      label: "Add tags (optional, up to 5).",
       description:
-        "Add keywords or phrases that describe your project (e.g. vibrant, ethereal, bold, dynamic, mystical, etc.). These will be used to auto-generate Spotify playlists.",
+        "Add keywords or phrases that describe your project (e.g. vibrant, ethereal, bold, dynamic, mystical, etc.).",
       component: (
         <AddTags
           loading={submitting}

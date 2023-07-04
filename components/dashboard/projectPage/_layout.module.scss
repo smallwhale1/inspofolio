@@ -1,0 +1,17 @@
+@import "../../../styles/variables";
+.projectLayout {
+  width: 100vw;
+  height: 100vh;
+  display: flex;
+  overflow-y: hidden;
+
+  .main {
+    margin-top: $navbarHeight;
+    flex-grow: 1;
+    height: calc(100vh - $navbarHeight);
+    margin-left: 2rem;
+    margin-right: 2rem;
+    overflow-y: auto;
+    overflow-x: auto;
+  }
+}

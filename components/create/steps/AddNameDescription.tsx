@@ -23,7 +23,7 @@ const AddNameDescription = ({ onSubmit, last }: NameProps) => {
         }}
         onKeyDown={(e) => {
           if (e.key === "Enter") {
-            onSubmit(name, description);
+            onSubmit(name !== "" ? name : "Untitled Project", description);
           }
         }}
       />

@@ -1,16 +1,16 @@
 import { Puff } from "react-loader-spinner";
-import styles from "./PuffLoader.module.scss";
+import styles from "./SpinLoader.module.scss";
 import { useTheme } from "@mui/material";
 
 type Props = {};
 
-const PuffLoader = (props: Props) => {
+const SpinLoader = (props: Props) => {
   const theme = useTheme();
   return (
     <div className={styles.loaderContainer}>
       <Puff
-        height="80"
-        width="80"
+        height={50}
+        width={50}
         radius={1}
         color={theme.palette.primary.main}
         ariaLabel="puff-loading"
@@ -20,4 +20,4 @@ const PuffLoader = (props: Props) => {
   );
 };
 
-export default PuffLoader;
+export default SpinLoader;

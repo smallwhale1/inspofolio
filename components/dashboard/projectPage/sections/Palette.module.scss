@@ -1,0 +1,11 @@
+.paletteGrid {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 1rem;
+}
+
+.colorSwatch {
+  width: 100px;
+  height: 100px;
+  border-radius: 0.5rem;
+}

@@ -21,7 +21,11 @@ const Logo = ({ color, fontSize, hideText, vertical, flipping }: LogoProps) => {
         flexDirection: vertical ? "column" : "row",
       }}
     >
-      <div className={flipping ? styles.animationWrapper : ""}>
+      <div
+        className={`${styles.iconWrapper} ${
+          flipping && styles.animationWrapper
+        }`}
+      >
         <GiAirZigzag />
       </div>
       {!hideText && <span>Inspofolio</span>}

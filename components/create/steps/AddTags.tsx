@@ -2,9 +2,9 @@ import styles from "./AddTags.module.scss";
 import { Button, IconButton, TextField, useTheme } from "@mui/material";
 import { useState } from "react";
 import { Tag } from "@/models/models";
-import { ListManager } from "@/util/ListManager";
 import { BiX } from "react-icons/bi";
 import { Oval } from "react-loader-spinner";
+import LoadingButton from "@/components/common/LoadingButton";
 
 interface TagsProps {
   tags: Tag[];
@@ -72,26 +72,11 @@ const AddTags = ({
         <Button variant="text" onClick={onBack}>
           previous
         </Button>
-        <Button
-          variant={"contained"}
-          onClick={() => {
-            onSubmit();
-          }}
-        >
-          create project
-          {loading && (
-            <Oval
-              height={20}
-              width={20}
-              color="#ffffff"
-              visible={true}
-              ariaLabel="oval-loading"
-              secondaryColor={theme.palette.grey200.main}
-              strokeWidth={3}
-              strokeWidthSecondary={3}
-            />
-          )}
-        </Button>
+        <LoadingButton
+          text="create project"
+          onSubmit={onSubmit}
+          loading={loading}
+        />
       </div>
     </div>
   );

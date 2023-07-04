@@ -1,5 +1,5 @@
 import { LinkType } from "@/util/enums";
-import { Timestamp } from "firebase/firestore";
+import { FinalColor } from "extract-colors";
 
 // sub interfaces
 export interface Link {
@@ -16,11 +16,10 @@ export interface Tag {
 
 export interface ImageData {
   _id: string;
+  colors: string[];
   file: File;
   previewUrl: string;
 }
-
-export interface Palette {}
 
 // main
 export interface Project {
@@ -29,7 +28,7 @@ export interface Project {
   name: string;
   description: string;
   imageUrls: string[];
-  palette: string[];
+  palette: FinalColor[];
   tags: string[];
   links: Link[];
   playlists: string[];

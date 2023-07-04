@@ -1,11 +1,10 @@
 import styles from "./LinkCard.module.scss";
 import { Link } from "@/models/models";
 import { LinkType } from "@/util/enums";
-import { IconButton } from "@mui/material";
+import { IconButton, useTheme } from "@mui/material";
 import { BiX } from "react-icons/bi";
 import {
   BsInstagram,
-  BsLink,
   BsLink45Deg,
   BsPinterest,
   BsTwitter,
@@ -14,10 +13,13 @@ import {
 
 interface LinkCardProps {
   link: Link;
-  removeLink: (id: string) => void;
+  removeLink?: (id: string) => void;
+  clickable?: boolean;
 }
 
-const LinkCard = ({ link, removeLink }: LinkCardProps) => {
+const LinkCard = ({ link, removeLink, clickable }: LinkCardProps) => {
+  const theme = useTheme();
+
   const getLinkIcon = () => {
     const iconSize = 28;
     switch (link.type) {
@@ -33,8 +35,14 @@ const LinkCard = ({ link, removeLink }: LinkCardProps) => {
         return <BsLink45Deg size={iconSize} className={styles.icon} />;
     }
   };
-  return (
-    <div className={styles.linkCard}>
+
+  const clickableLink = () => (
+    <a
+      href={link.url}
+      className={styles.linkCard}
+      style={{ borderColor: theme.palette.grey300.main }}
+      target="_blank"
+    >
       {getLinkIcon()}
       <div className={styles.link}>
         <h3 className={styles.linkTitle}>
@@ -42,15 +50,43 @@ const LinkCard = ({ link, removeLink }: LinkCardProps) => {
         </h3>
         <div className={styles.linkUrl}> {link.url}</div>
       </div>
-      <IconButton
-        onClick={() => {
-          removeLink(link._id);
-        }}
-      >
-        <BiX />
-      </IconButton>
+      {removeLink && (
+        <IconButton
+          onClick={() => {
+            removeLink?.(link._id);
+          }}
+        >
+          <BiX />
+        </IconButton>
+      )}
+    </a>
+  );
+
+  const preview = () => (
+    <div
+      className={styles.linkCard}
+      style={{ borderColor: theme.palette.grey300.main }}
+    >
+      {getLinkIcon()}
+      <div className={styles.link}>
+        <h3 className={styles.linkTitle}>
+          {link.title ? link.title : "Untitled Link"}
+        </h3>
+        <div className={styles.linkUrl}> {link.url}</div>
+      </div>
+      {removeLink && (
+        <IconButton
+          onClick={() => {
+            removeLink?.(link._id);
+          }}
+        >
+          <BiX />
+        </IconButton>
+      )}
     </div>
   );
+
+  return clickable ? clickableLink() : preview();
 };
 
 export default LinkCard;

@@ -3,6 +3,7 @@ import Image from "next/image";
 import Link from "next/link";
 import { Project } from "@/models/models";
 import { useEffect, useRef, useState } from "react";
+import { useTheme } from "@mui/material";
 
 interface ProjectCardProps {
   project: Project;
@@ -12,6 +13,7 @@ const ProjectCard = ({ project }: ProjectCardProps) => {
   const cardRef = useRef<HTMLDivElement>(null);
   const [imgHeight, setImgHeight] = useState(0);
   const [imgLoaded, setImgLoaded] = useState(false);
+  const theme = useTheme();
 
   useEffect(() => {
     if (!cardRef.current) return;
@@ -30,7 +32,13 @@ const ProjectCard = ({ project }: ProjectCardProps) => {
   return (
     <Link href={`/dashboard/${project._id}`}>
       <div className={styles.projectCard} ref={cardRef}>
-        <div className={styles.imgContainer} style={{ height: imgHeight }}>
+        <div
+          className={styles.imgContainer}
+          style={{
+            height: imgHeight,
+            backgroundColor: theme.palette.secondary.main,
+          }}
+        >
           {project.imageUrls.length > 0 && (
             <Image
               onLoad={() => setImgLoaded(true)}

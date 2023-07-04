@@ -13,10 +13,17 @@ export interface CreateProject {
   tags: Tag[];
 }
 
-export interface SpotifyInterface {
+export interface SpotifyAccess {
   access_token: string;
   token_type: string;
   scope: string;
   expires_in: number;
   refresh_token: string;
+}
+
+export interface SpotifyRefresh {
+  access_token: string;
+  token_type: string;
+  scope: string;
+  expires_in: number;
 }

@@ -1,1 +1,3 @@
-export class UserManager {}
+export class UserManager {
+  static createUser = async () => {};
+}

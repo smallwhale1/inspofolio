@@ -1,0 +1,46 @@
+@import "../../../styles/variables";
+
+.sidebar {
+  flex-shrink: 0;
+  display: flex;
+  flex-direction: column;
+  width: 250px;
+  z-index: 999;
+  border-right: 1px solid;
+
+  .logoWrapper {
+    height: $navbarHeight;
+    display: flex;
+    align-items: center;
+    padding-left: 2rem;
+    align-self: flex-start;
+  }
+
+  .menuItems {
+    list-style-type: none;
+    display: flex;
+    flex-direction: column;
+
+    .menuItem {
+      .listItemBtn {
+        background-color: #00000000;
+        cursor: pointer;
+        width: 100%;
+        display: block;
+        border: none;
+        outline: none;
+
+        .itemText {
+          display: block;
+          text-align: left;
+          font-weight: 500;
+          letter-spacing: 1px;
+          font-size: 1rem;
+          padding: 1.5rem;
+          margin: 0.5rem 1rem;
+          border-radius: 1rem;
+        }
+      }
+    }
+  }
+}

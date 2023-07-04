@@ -96,3 +96,11 @@
 .visible {
   opacity: 1;
 }
+
+@media (max-width: 750px) {
+  .create {
+    .right {
+      display: none;
+    }
+  }
+}

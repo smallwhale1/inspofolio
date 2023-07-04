@@ -9,6 +9,7 @@ import { useRouter } from "next/router";
 import { AuthManager } from "@/firebase/AuthManager";
 import { BsPlayFill } from "react-icons/bs";
 import { fadeDuration } from "@/util/constants";
+import { ProjectsManager } from "@/firebase/ProjectsManager";
 
 const font = Playfair_Display({
   subsets: ["latin"],
@@ -34,23 +35,24 @@ const auth = () => {
 
   const handleGoogleSignIn = async () => {
     const user = await AuthManager.signInWithGoogle();
-    if (authType === AuthType.SIGNUP) {
-      nextRoute.current = "/create?firsttime=true";
+    const hasProject = await ProjectsManager.userHasProject(user.user.uid);
+    if (hasProject) {
+      nextRoute.current = "/dashboard";
       setExiting(true);
     } else {
-      nextRoute.current = "/create?firsttime=true";
+      nextRoute.current = "/create";
       setExiting(true);
     }
   };
 
   const handleAnonymousSignIn = async () => {
     const user = await AuthManager.signInAnon();
-    console.log(user);
-    if (authType === AuthType.SIGNUP) {
-      nextRoute.current = "/create?firsttime=true&guest=true";
+    const hasProject = await ProjectsManager.userHasProject(user.user.uid);
+    if (hasProject) {
+      nextRoute.current = "/dashboard";
       setExiting(true);
     } else {
-      nextRoute.current = "/create?firsttime=true&guest=true";
+      nextRoute.current = "/create?guest=true";
       setExiting(true);
     }
   };
@@ -61,11 +63,18 @@ const auth = () => {
       return;
     }
     if (authType === AuthType.LOGIN) {
-      const res = AuthManager.signInEmailPassword(email, password);
+      const res = await AuthManager.signInEmailPassword(email, password);
       if (typeof res === "string") {
         // error occured, toast messgae
       } else {
-        router.push("/dashboard");
+        const hasProject = await ProjectsManager.userHasProject(res.user.uid);
+        if (hasProject) {
+          nextRoute.current = "/dashboard";
+          setExiting(true);
+        } else {
+          nextRoute.current = "/create";
+          setExiting(true);
+        }
       }
     } else {
       const res = await AuthManager.signUpEmailPassword(email, password);
@@ -79,7 +88,8 @@ const auth = () => {
         if (typeof signInRes === "string") {
           // error occured, toast messgae
         } else {
-          router.push("/create?firsttime=true");
+          nextRoute.current = "/create";
+          setExiting(true);
         }
       }
     }

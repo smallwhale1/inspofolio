@@ -21,3 +21,9 @@
     }
   }
 }
+
+@media (max-width: 600px) {
+  .topbar {
+    padding: 0 $horizontalPaddingResponsive;
+  }
+}

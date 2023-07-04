@@ -137,8 +137,28 @@
       justify-content: center;
 
       .right {
+        gap: 1rem;
+
+        h2 {
+          font-size: 1.5rem;
+        }
         min-width: 0;
         width: 95vw;
+      }
+    }
+  }
+}
+
+@media (max-width: 500px) {
+  .main {
+    .content {
+      .left {
+      }
+
+      .right {
+        h2 {
+          font-size: 1.5rem;
+        }
       }
     }
   }
