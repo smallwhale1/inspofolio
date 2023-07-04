@@ -5,6 +5,7 @@ import { RxExit } from "react-icons/rx";
 import { BiUser } from "react-icons/bi";
 import { AuthManager } from "@/firebase/AuthManager";
 import { useRouter } from "next/router";
+import { navbarLogoSize } from "@/util/constants";
 
 interface TopbarProps {}
 
@@ -19,7 +20,7 @@ const Topbar = (props: TopbarProps) => {
 
   return (
     <nav className={styles.topbar}>
-      <Logo color={theme.palette.textColor.main} fontSize={"1rem"} />
+      <Logo color={theme.palette.textColor.main} fontSize={navbarLogoSize} />
       <ul className={styles.navbarBtns}>
         <li className={styles.btnItem}>
           <IconButton>

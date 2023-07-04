@@ -48,18 +48,20 @@ const create = () => {
     tags: [],
   });
   const { user, loading } = useContext(AuthContext);
-
   const [animationState, setAnimationState] = useState<AnimationState>(
     AnimationState.CENTER
   );
   // Query parameter for first time or if they don't have any projects yet
   const router = useRouter();
   const theme = useTheme();
+  const [submitting, setSubmitting] = useState(false);
 
   const handleProjectSubmit = async () => {
     console.log(project);
     if (!user) return;
+    setSubmitting(true);
     const res = await ProjectsManager.addProject(project, user.uid);
+    setSubmitting(false);
   };
 
   const getAnimationClass = () => {
@@ -181,6 +183,7 @@ const create = () => {
         "Add keywords or phrases that describe your project (e.g. vibrant, ethereal, bold, dynamic, mystical, etc.). These will be used to auto-generate Spotify playlists.",
       component: (
         <AddTags
+          loading={submitting}
           onBack={() => {
             animateStep("prev", () => {
               setCurrStep((prev) => prev - 1);

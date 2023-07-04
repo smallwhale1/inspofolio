@@ -23,6 +23,7 @@ const Dashboard = (props: Props) => {
   useEffect(() => {
     if (user) {
       console.log(user.uid);
+      console.log(user.email);
     }
   }, []);
   return (

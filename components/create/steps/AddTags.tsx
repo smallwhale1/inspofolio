@@ -4,6 +4,7 @@ import { useState } from "react";
 import { Tag } from "@/models/models";
 import { ListManager } from "@/util/ListManager";
 import { BiX } from "react-icons/bi";
+import { Oval } from "react-loader-spinner";
 
 interface TagsProps {
   tags: Tag[];
@@ -11,9 +12,17 @@ interface TagsProps {
   onAdd: (tag: string) => void;
   onRemove: (id: string) => void;
   onSubmit: () => void;
+  loading: boolean;
 }
 
-const AddTags = ({ onBack, onAdd, onRemove, onSubmit, tags }: TagsProps) => {
+const AddTags = ({
+  onBack,
+  onAdd,
+  onRemove,
+  onSubmit,
+  tags,
+  loading,
+}: TagsProps) => {
   const [newTag, setNewTag] = useState("");
   const theme = useTheme();
 
@@ -70,6 +79,18 @@ const AddTags = ({ onBack, onAdd, onRemove, onSubmit, tags }: TagsProps) => {
           }}
         >
           create project
+          {loading && (
+            <Oval
+              height={20}
+              width={20}
+              color="#ffffff"
+              visible={true}
+              ariaLabel="oval-loading"
+              secondaryColor={theme.palette.grey200.main}
+              strokeWidth={3}
+              strokeWidthSecondary={3}
+            />
+          )}
         </Button>
       </div>
     </div>

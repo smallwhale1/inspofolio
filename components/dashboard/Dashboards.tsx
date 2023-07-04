@@ -1,11 +1,22 @@
+import { Button } from "@mui/material";
 import styles from "./Dashboards.module.scss";
+import { useRouter } from "next/router";
 
-type Props = {};
-
-const Dashboards = (props: Props) => {
+const Dashboards = () => {
+  const router = useRouter();
   return (
     <div className={styles.dashboards}>
-      <h2>Your Dashboards</h2>
+      <div className={styles.dashboardHeading}>
+        <h2>Your Projects</h2>
+        <Button
+          onClick={() => {
+            router.push("/create");
+          }}
+          variant="contained"
+        >
+          create
+        </Button>
+      </div>
     </div>
   );
 };

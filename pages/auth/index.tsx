@@ -41,7 +41,7 @@ const auth = () => {
     }
   };
 
-  const handleAnonymouseSignIn = async () => {
+  const handleAnonymousSignIn = async () => {
     const user = await AuthManager.signInAnon();
     console.log(user);
     if (authType === AuthType.SIGNUP) {
@@ -173,7 +173,7 @@ const auth = () => {
                 continue with google
               </span>
             </Button>
-            <Button variant="contained" onClick={handleAnonymouseSignIn}>
+            <Button variant="contained" onClick={handleAnonymousSignIn}>
               <span className={styles.iconBtn} style={{ gap: "0.5rem" }}>
                 <BsPlayFill size={25} /> demo without account
               </span>

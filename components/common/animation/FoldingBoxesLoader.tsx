@@ -1,7 +1,5 @@
 import styles from "./FoldingBoxesLoader.module.scss";
 
-type Props = {};
-
 const FoldingBoxesLoader = () => {
   return (
     <div className={styles.cubeWrapper}>
