@@ -169,29 +169,30 @@ const create = () => {
     {
       label: "Add links (optional).",
       description:
-        "Add links to content that you want to reference (e.g. Pinterest, Instagram, Twitter, etc.)",
+        "Reference and organize all your links in one place! There is in-built support for embedded Instagram, Pinterest, Twitter, TikTok, and Youtube posts and content as long as you provide an accessible link. Ex: https://www.pinterest.com/pin/684828687110844650/, https://www.instagram.com/p/CuSXCmjsU6Y/",
       component: (
         <AddLinks
           links={project.links}
-          onBack={() => {
-            animateStep("prev", () => {
-              setCurrStep((prev) => prev - 1);
-            });
-          }}
-          onAdd={addLink}
-          onRemove={removeLink}
-          onSubmit={() => {
-            animateStep("next", () => {
-              setCurrStep((prev) => prev + 1);
-            });
+          createProps={{
+            onBack: () => {
+              animateStep("prev", () => {
+                setCurrStep((prev) => prev - 1);
+              });
+            },
+            onAdd: addLink,
+            onRemove: removeLink,
+            onSubmit: () => {
+              animateStep("next", () => {
+                setCurrStep((prev) => prev + 1);
+              });
+            },
           }}
         />
       ),
     },
     {
       label: "Add tags (optional, up to 5).",
-      description:
-        "Add keywords or phrases that describe your project (e.g. vibrant, ethereal, bold, dynamic, mystical, etc.).",
+      description: "Add keywords or phrases that describe your project.",
       component: (
         <AddTags
           loading={submitting}

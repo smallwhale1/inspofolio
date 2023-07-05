@@ -1,20 +1,32 @@
 import styles from "./AddLinks.module.scss";
 import { Link } from "@/models/models";
-import { Button, TextField, TextareaAutosize } from "@mui/material";
+import { Button, TextField } from "@mui/material";
 import { useState } from "react";
 import LinkCard from "./LinkCard";
+import { ListManager } from "@/util/ListManager";
+import { LinkManager } from "@/util/LinkManager";
 
-interface LinkProps {
-  links: Link[];
-  onBack: () => void;
+export interface CreateProps {
   onSubmit: () => void;
+  onBack: () => void;
   onAdd: (newLink: string, title: string) => void;
   onRemove: (id: string) => void;
 }
 
-const AddLinks = ({ links, onBack, onSubmit, onAdd, onRemove }: LinkProps) => {
+export interface EditProps {
+  onSubmit: (newLinks: Link[]) => void;
+}
+
+interface LinkProps {
+  links: Link[];
+  createProps?: CreateProps;
+  editProps?: EditProps;
+}
+
+const AddLinks = ({ links, createProps, editProps }: LinkProps) => {
   const [newLink, setNewLink] = useState("");
   const [newLinkTitle, setNewLinkTitle] = useState("");
+  const [newLinks, setNewLinks] = useState<Link[]>([]);
 
   const addLink = () => {
     if (newLink === "") {
@@ -22,14 +34,27 @@ const AddLinks = ({ links, onBack, onSubmit, onAdd, onRemove }: LinkProps) => {
       console.log("Link cannot be empty!");
       return;
     }
-    onAdd(newLink, newLinkTitle);
-
-    setNewLink("");
-    setNewLinkTitle("");
+    if (createProps) {
+      createProps.onAdd(newLink, newLinkTitle);
+      setNewLink("");
+      setNewLinkTitle("");
+    } else {
+      setNewLinks((prev) => [
+        ...prev,
+        {
+          _id: ListManager.getNewId(prev),
+          url: newLink,
+          title: newLinkTitle,
+          type: LinkManager.extractLinkType(newLink),
+        },
+      ]);
+      setNewLink("");
+      setNewLinkTitle("");
+    }
   };
 
   const removeLink = (id: string) => {
-    onRemove(id);
+    if (createProps) createProps.onRemove(id);
   };
 
   return (
@@ -68,24 +93,45 @@ const AddLinks = ({ links, onBack, onSubmit, onAdd, onRemove }: LinkProps) => {
           }
         }}
       />
-      {links.length !== 0 && (
+      {createProps ? (
         <div className={styles.addedLinks}>
           {links.map((link) => (
             <LinkCard key={link._id} link={link} removeLink={removeLink} />
           ))}
         </div>
+      ) : (
+        <div className={styles.addedLinks}>
+          {newLinks.map((link) => (
+            <LinkCard key={link._id} link={link} removeLink={removeLink} />
+          ))}
+        </div>
       )}
-      <div className={styles.btnContainer}>
-        <Button variant="text" onClick={onBack}>
-          previous
-        </Button>
+      {/* Bottom buttons */}
+      {createProps && (
+        <div className={styles.btnContainer}>
+          <Button variant="text" onClick={createProps.onBack}>
+            previous
+          </Button>
+          <Button
+            variant={links.length === 0 ? "text" : "contained"}
+            onClick={() => {
+              createProps.onSubmit();
+            }}
+          >
+            {links.length === 0 ? "skip" : "continue"}
+          </Button>
+        </div>
+      )}
+      {editProps && (
         <Button
-          variant={links.length === 0 ? "text" : "contained"}
-          onClick={onSubmit}
+          variant="contained"
+          onClick={() => {
+            editProps.onSubmit(newLinks);
+          }}
         >
-          {links.length === 0 ? "skip" : "continue"}
+          submit
         </Button>
-      </div>
+      )}
     </div>
   );
 };

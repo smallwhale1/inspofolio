@@ -9,6 +9,7 @@ import {
   getDocs,
   limit,
   query,
+  updateDoc,
   where,
 } from "firebase/firestore";
 import { StorageManager } from "./StorageManager";
@@ -25,6 +26,16 @@ interface AddProject {
   playlists: string[];
   shared: boolean;
 }
+
+// TODO: Create demo projects for users
+const DemoProject: CreateProject = {
+  name: "Food studies (Demo Project)",
+  description: "A demo project for a project focused on food studies",
+  imgs: [],
+  palette: [],
+  links: [],
+  tags: [],
+};
 
 export class ProjectsManager {
   static addProject = async (project: CreateProject, uid: string) => {
@@ -67,6 +78,21 @@ export class ProjectsManager {
         return err.message;
       }
       return "An unknown error occured.";
+    }
+  };
+
+  static updateProject = async (
+    id: string,
+    key: keyof Project,
+    newContent: any
+  ) => {
+    try {
+      const docRef = doc(db, "projects", id);
+      await updateDoc(docRef, {
+        [key]: newContent,
+      });
+    } catch (err) {
+      console.log(err);
     }
   };
 

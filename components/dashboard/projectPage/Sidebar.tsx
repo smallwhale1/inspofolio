@@ -48,8 +48,8 @@ const Sidebar = ({ projectSection, setProjectSection }: Props) => {
                 style={
                   projectSection === section
                     ? {
-                        backgroundColor: theme.palette.grey200.main,
-                        color: theme.palette.grey600.main,
+                        backgroundColor: theme.palette.grey100.main,
+                        color: theme.palette.grey500.main,
                       }
                     : {}
                 }

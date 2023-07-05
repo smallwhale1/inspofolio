@@ -5,7 +5,6 @@ import { useCallback } from "react";
 import { useDropzone } from "react-dropzone";
 import { AiOutlineUpload } from "react-icons/ai";
 import { BiX } from "react-icons/bi";
-import Image from "next/image";
 
 interface ImagesProps {
   imgs: ImageData[];

@@ -1,3 +1,4 @@
+import styles from "./Music.module.scss";
 import { Project } from "@/models/models";
 import { useEffect, useState } from "react";
 import { SpotifyManager } from "@/util/SpotifyManager";
@@ -5,6 +6,7 @@ import { useRouter } from "next/router";
 import LoadingButton from "@/components/common/LoadingButton";
 import { BsSpotify } from "react-icons/bs";
 import FoldingBoxesLoader from "@/components/common/animation/FoldingBoxesLoader";
+import { Spotify } from "react-spotify-embed";
 
 type Props = {
   project: Project;
@@ -51,13 +53,23 @@ const Music = ({ project }: Props) => {
   }, []);
 
   return (
-    <div>
+    <div className={styles.music}>
       {loading && <FoldingBoxesLoader />}
       {!loading &&
         (loggedIn ? (
-          <div>
-            <h2>{user?.display_name}</h2>
-            <h3>{user?.email}</h3>
+          <div className={styles.music}>
+            <p>Logged in as {user?.display_name}</p>
+            <h3>Recommended</h3>
+            <div className={styles.musicContainer}>
+              <Spotify
+                link="https://open.spotify.com/album/2QJmrSgbdM35R67eoGQo4j"
+                width={"100%"}
+              />
+              <Spotify
+                link="https://open.spotify.com/album/5M8td2xvD7Vg9FNAhEFJj1"
+                width={"100%"}
+              />
+            </div>
           </div>
         ) : (
           <LoadingButton

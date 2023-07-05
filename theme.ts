@@ -48,7 +48,8 @@ declare module "@mui/material/styles" {
 export const lightTheme = createTheme({
   palette: {
     primary: {
-      main: "#f25771",
+      // main: "#57c9f2",
+      main: "rgb(0, 149, 246)",
     },
     secondary: {
       main: "#18181b",
@@ -57,7 +58,8 @@ export const lightTheme = createTheme({
       main: "#52525b",
     },
     textColor: { main: "#18181b" },
-    bgColor: { main: "#fbf7f0" },
+    bgColor: { main: "#ffffff" },
+    // bgColor: { main: "#fbf7f0" },
     blue500: {
       main: "#3b82f6",
     },
@@ -105,8 +107,10 @@ export const lightTheme = createTheme({
     },
     MuiButton: {
       styleOverrides: {
+        contained: {
+          color: "#ffffff",
+        },
         root: {
-          // color: "#ffffff",
           boxShadow: "none",
           "&:hover": {
             boxShadow: "none",

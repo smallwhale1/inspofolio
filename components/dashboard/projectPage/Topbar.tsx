@@ -1,21 +1,34 @@
-import { Button, IconButton, useTheme } from "@mui/material";
+import { IconButton, useTheme } from "@mui/material";
 import styles from "./Topbar.module.scss";
-import { navbarLogoSize } from "@/util/constants";
-import Logo from "@/components/common/Logo";
 import { BiUser } from "react-icons/bi";
 import { RxExit } from "react-icons/rx";
 import { useRouter } from "next/router";
 import { AuthManager } from "@/firebase/AuthManager";
+import { useContext, useEffect, useState } from "react";
+import { AuthContext } from "@/contexts/AuthContext";
 
 type Props = {};
 
 const Topbar = (props: Props) => {
+  const [profileVisible, setProfileVisible] = useState(false);
   const theme = useTheme();
   const router = useRouter();
   const handleSignOut = async () => {
     await AuthManager.signOut();
     router.push("/auth");
   };
+  const { loading, user } = useContext(AuthContext);
+
+  useEffect(() => {
+    const handlePointerDown = () => {
+      setProfileVisible(false);
+    };
+
+    window.addEventListener("pointerdown", handlePointerDown);
+
+    return () => window.removeEventListener("pointer", handlePointerDown);
+  }, []);
+
   return (
     <nav
       className={styles.topbar}
@@ -25,9 +38,27 @@ const Topbar = (props: Props) => {
     >
       <ul className={styles.navbarBtns}>
         <li className={styles.btnItem}>
-          <IconButton>
+          <IconButton
+            onClick={() => {
+              setProfileVisible(true);
+            }}
+          >
             <BiUser color={theme.palette.textColor.main} />
           </IconButton>
+          {profileVisible && (
+            <div
+              onPointerDown={(e) => {
+                e.stopPropagation();
+              }}
+              className={styles.profilePopup}
+              style={{
+                backgroundColor: theme.palette.bgColor.main,
+                borderColor: theme.palette.grey200.main,
+              }}
+            >
+              {!loading && user?.email}
+            </div>
+          )}
         </li>
         <li className={styles.btnItem}>
           <IconButton onClick={handleSignOut}>

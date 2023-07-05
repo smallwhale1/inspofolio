@@ -43,7 +43,7 @@ export class CreateManager {
         ...prev.links,
         {
           _id: ListManager.getNewId(prev.links),
-          url: newLink,
+          url: newLink.trim(),
           title: linkTitle !== "" ? linkTitle : "Untitled Link",
           type: LinkManager.extractLinkType(newLink),
         },

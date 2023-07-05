@@ -6,6 +6,7 @@
   color: #000000;
   background-color: #ffffff;
   transition: scale 0.2s ease;
+  box-shadow: 0 0 15px #e0e0e07c;
 
   &:hover {
     scale: 1.02;
@@ -13,7 +14,6 @@
 
   .imgContainer {
     position: relative;
-    // background: linear-gradient(45deg, #f15c5c, #f15cd1);
     border-top-left-radius: 2rem;
     border-top-right-radius: 2rem;
 

@@ -3,18 +3,15 @@ import { Project } from "@/models/models";
 import { useState } from "react";
 import Masonry from "react-masonry-css";
 import ImageCard from "./ImageCard";
-import { ListManager } from "@/util/ListManager";
-import { ImageList } from "@mui/material";
 
 type Props = {
   project: Project;
 };
 
 const breakCols = {
-  default: 4,
-  1200: 3,
-  1000: 2,
-  750: 1,
+  default: 3,
+  1200: 2,
+  900: 1,
 };
 
 interface ImageInfo {

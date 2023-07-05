@@ -3,6 +3,10 @@ export enum LinkType {
   PINTEREST,
   TWITTER,
   YOUTUBE,
+  TIKTOK,
+  // non-embedded
+  FIGMA,
+  ARTSTATION,
   OTHER,
 }
 
