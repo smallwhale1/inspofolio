@@ -50,7 +50,7 @@ const Music = ({ project }: Props) => {
     };
 
     getUser();
-  }, []);
+  }, [router]);
 
   return (
     <div className={styles.music}>

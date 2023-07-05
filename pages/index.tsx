@@ -39,7 +39,6 @@ export default function Home() {
           transitionDuration: `${animationDuration}s`,
         }}
       >
-        {/* <Logo fontSize={"3rem"} color="#ffffff" flipping hideText /> */}
         <FoldingBoxesLoader />
       </main>
     </>

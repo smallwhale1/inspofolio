@@ -35,7 +35,7 @@ const font = Playfair_Display({
   weight: ["400", "500", "600", "700"],
 });
 
-const create = () => {
+const Create = () => {
   const [currStep, setCurrStep] = useState<number>(0);
   const [bgImgLoaded, setBgImgLoaded] = useState(false);
   const [visible, setVisible] = useState(false);
@@ -239,8 +239,8 @@ const create = () => {
             <h2>Create a new project.</h2>
             <p style={{ color: theme.palette.textGrey.main }}>
               Each project contains the images, palette, links, and playlists
-              for your reference during your workflow. Don't worry about adding
-              everything now, you can always add content later!
+              for your reference during your workflow. Don&apos;t worry about
+              adding everything now, you can always add content later!
             </p>
             <div className={styles.stepLabel}>
               <BsArrowRightCircle />
@@ -277,4 +277,4 @@ const create = () => {
   );
 };
 
-export default create;
+export default Create;

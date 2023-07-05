@@ -25,10 +25,13 @@ const AddImages = ({
   onBack,
 }: ImagesProps) => {
   const theme = useTheme();
-  const onDrop = useCallback((acceptedFiles: File[]) => {
-    if (!acceptedFiles || acceptedFiles.length > maxImages) return;
-    onAdd(acceptedFiles);
-  }, []);
+  const onDrop = useCallback(
+    (acceptedFiles: File[]) => {
+      if (!acceptedFiles || acceptedFiles.length > maxImages) return;
+      onAdd(acceptedFiles);
+    },
+    [onAdd]
+  );
   const { getRootProps, getInputProps, isDragActive } = useDropzone({
     onDrop,
     accept: {

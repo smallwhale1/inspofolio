@@ -51,13 +51,15 @@ const Projects = () => {
             ) : projects.length < 3 ? (
               <>
                 {projects.map((project) => (
-                  <ProjectCard project={project} />
+                  <ProjectCard key={project._id} project={project} />
                 ))}
                 <div></div>
                 <div></div>
               </>
             ) : (
-              projects.map((project) => <ProjectCard project={project} />)
+              projects.map((project) => (
+                <ProjectCard key={project._id} project={project} />
+              ))
             )}
           </div>
         )}

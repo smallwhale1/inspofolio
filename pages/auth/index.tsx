@@ -21,7 +21,7 @@ enum AuthType {
   LOGIN,
 }
 
-const auth = () => {
+const Auth = () => {
   const [bgImgLoaded, setBgImgLoaded] = useState(false);
   const [visible, setVisible] = useState(false);
   const [isResponsive, setIsResponsive] = useState(false);
@@ -122,7 +122,7 @@ const auth = () => {
     setTimeout(() => {
       router.push(nextRoute.current);
     }, fadeDuration * 1000);
-  }, [exiting]);
+  }, [exiting, router]);
 
   return (
     <>
@@ -241,4 +241,4 @@ const auth = () => {
   );
 };
 
-export default auth;
+export default Auth;
