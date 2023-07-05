@@ -56,7 +56,7 @@ const Topbar = (props: Props) => {
                 borderColor: theme.palette.grey200.main,
               }}
             >
-              {!loading && user?.email}
+              {!loading && (user?.email ? user.email : "Anonymous")}
             </div>
           )}
         </li>

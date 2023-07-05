@@ -132,6 +132,9 @@
 
 @media (max-width: 750px) {
   .main {
+    .bgImg {
+      object-position: left;
+    }
     .content {
       flex-direction: column;
       justify-content: center;
@@ -156,8 +159,13 @@
       }
 
       .right {
+        padding: 2rem 3rem;
+
+        .orDelimitter {
+          margin: 0.25rem 0;
+        }
         h2 {
-          font-size: 1.5rem;
+          font-size: 1.3rem;
         }
       }
     }

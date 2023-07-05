@@ -6,8 +6,6 @@ import { ProjectsManager } from "@/firebase/ProjectsManager";
 import { AuthContext } from "@/contexts/AuthContext";
 import { Project } from "@/models/models";
 import ProjectCard from "./ProjectCard";
-import SpinLoader from "../common/animation/SpinLoader";
-import FoldingBoxesLoader from "../common/animation/FoldingBoxesLoader";
 
 const Projects = () => {
   const router = useRouter();
@@ -42,9 +40,7 @@ const Projects = () => {
       </div>
       {/* Projects */}
       <main className={styles.main}>
-        {fetching ? (
-          <FoldingBoxesLoader />
-        ) : (
+        {!fetching && (
           <div className={styles.projectsGrid}>
             {projects.length === 0 ? (
               <div>No projects yet.</div>

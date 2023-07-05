@@ -37,6 +37,28 @@
 $size: 60px;
 $primary-color: rgb(68, 199, 255);
 
+// rainbow line
+$rainbow1: #ff5f6f;
+$rainbow2: #ff5fc4;
+$rainbow3: #f25fff;
+$rainbow4: #c45fff;
+$rainbow5: #975fff;
+$rainbow6: #6f5fff;
+$rainbow7: #5f7aff;
+$rainbow8: #5faaff;
+$rainbow9: #54c7fc;
+
+// blue line
+$blue1: rgb(0, 29, 246);
+$blue2: rgb(0, 57, 246);
+$blue3: rgb(0, 86, 246);
+$blue4: rgb(0, 111, 246);
+$blue5: rgb(0, 149, 246);
+$blue6: rgb(0, 164, 246);
+$blue7: rgb(0, 193, 246);
+$blue8: rgb(0, 209, 246);
+$blue9: rgb(0, 226, 246);
+
 // cube only
 .cubeFolding {
   width: $size;
@@ -69,7 +91,7 @@ $primary-color: rgb(68, 199, 255);
   .leaf1 {
     @include transform(rotateZ(0deg) scale(1.1));
     &::before {
-      background-color: #ff5f64;
+      background-color: $rainbow1;
     }
   }
 
@@ -79,7 +101,7 @@ $primary-color: rgb(68, 199, 255);
       -webkit-animation-delay: 0.3s;
       animation-delay: 0.3s;
       background-color: darken($primary-color, 5%);
-      background-color: #ff5fc4;
+      background-color: $rainbow2;
     }
   }
   .leaf3 {
@@ -88,7 +110,7 @@ $primary-color: rgb(68, 199, 255);
       -webkit-animation-delay: 0.6s;
       animation-delay: 0.6s;
       background-color: darken($primary-color, 10%);
-      background-color: #f25fff;
+      background-color: $rainbow3;
     }
   }
   .leaf6 {
@@ -97,7 +119,7 @@ $primary-color: rgb(68, 199, 255);
       -webkit-animation-delay: 0.9s;
       animation-delay: 0.9s;
       background-color: darken($primary-color, 25%);
-      background-color: #c45fff;
+      background-color: $rainbow4;
     }
   }
   .leaf9 {
@@ -106,7 +128,7 @@ $primary-color: rgb(68, 199, 255);
       -webkit-animation-delay: 1.2s;
       animation-delay: 1.2s;
       background-color: darken($primary-color, 40%);
-      background-color: #975fff;
+      background-color: $rainbow5;
     }
   }
   .leaf8 {
@@ -115,7 +137,7 @@ $primary-color: rgb(68, 199, 255);
       -webkit-animation-delay: 1.5s;
       animation-delay: 1.5s;
       background-color: darken($primary-color, 35%);
-      background-color: #6f5fff;
+      background-color: $rainbow6;
     }
   }
   .leaf7 {
@@ -124,7 +146,7 @@ $primary-color: rgb(68, 199, 255);
       -webkit-animation-delay: 1.8s;
       animation-delay: 1.8s;
       background-color: darken($primary-color, 30%);
-      background-color: #5f7aff;
+      background-color: $rainbow7;
     }
   }
   .leaf4 {
@@ -133,7 +155,7 @@ $primary-color: rgb(68, 199, 255);
       -webkit-animation-delay: 2.1s;
       animation-delay: 2.1s;
       background-color: darken($primary-color, 15%);
-      background-color: #5faaff;
+      background-color: $rainbow8;
     }
   }
   .leaf5 {
@@ -142,7 +164,7 @@ $primary-color: rgb(68, 199, 255);
       -webkit-animation-delay: 2.4s;
       animation-delay: 2.4s;
       background-color: darken($primary-color, 20%);
-      background-color: #5fccff;
+      background-color: $rainbow9;
     }
   }
 }

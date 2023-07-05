@@ -6,21 +6,21 @@ import LinkCard from "./LinkCard";
 import { ListManager } from "@/util/ListManager";
 import { LinkManager } from "@/util/LinkManager";
 
-export interface CreateProps {
+export interface LinkCreateProps {
   onSubmit: () => void;
   onBack: () => void;
   onAdd: (newLink: string, title: string) => void;
   onRemove: (id: string) => void;
 }
 
-export interface EditProps {
+export interface LinkEditProps {
   onSubmit: (newLinks: Link[]) => void;
 }
 
 interface LinkProps {
   links: Link[];
-  createProps?: CreateProps;
-  editProps?: EditProps;
+  createProps?: LinkCreateProps;
+  editProps?: LinkEditProps;
 }
 
 const AddLinks = ({ links, createProps, editProps }: LinkProps) => {
@@ -54,7 +54,11 @@ const AddLinks = ({ links, createProps, editProps }: LinkProps) => {
   };
 
   const removeLink = (id: string) => {
-    if (createProps) createProps.onRemove(id);
+    if (createProps) {
+      createProps.onRemove(id);
+    } else {
+      setNewLinks((prev) => prev.filter((link) => link._id !== id));
+    }
   };
 
   return (

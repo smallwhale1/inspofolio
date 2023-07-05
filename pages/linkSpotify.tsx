@@ -38,12 +38,12 @@ const LinkSpotify = () => {
     >
       <h1>Link your Spotify Account (optional)</h1>
       <h2>
-        By linking your Spotify account, you&apos;ll be able to generate
-        playlists for your workflow and stream music from within the app.
+        By linking your Spotify account, you&apos;ll be able to access your
+        playlists and add them to your projects.
       </h2>
-      <p style={{ color: theme.palette.grey500.main }}>
+      {/* <p style={{ color: theme.palette.grey500.main }}>
         *Streaming within the app only available to Spotify Premium users
-      </p>
+      </p> */}
       <div className={styles.btnContainer}>
         <a
           href={

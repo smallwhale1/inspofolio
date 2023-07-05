@@ -31,7 +31,9 @@
         outline: none;
 
         .itemText {
-          display: block;
+          display: flex;
+          align-items: center;
+          gap: 1rem;
           text-align: left;
           font-weight: 500;
           letter-spacing: 1px;
@@ -43,4 +45,8 @@
       }
     }
   }
+}
+
+.sidebarMinimized {
+  width: auto;
 }

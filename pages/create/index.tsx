@@ -7,7 +7,7 @@ import Image from "next/image";
 import AuthGuardedLayout from "@/components/common/authGuarded/_layout";
 import { useTheme } from "@mui/material";
 import { useRouter } from "next/router";
-import { ReactNode, useContext, useEffect, useRef, useState } from "react";
+import { ReactNode, useContext, useEffect, useState } from "react";
 import { Playfair_Display } from "next/font/google";
 import { BsArrowRightCircle } from "react-icons/bs";
 import { fadeDuration } from "@/util/constants";
@@ -57,7 +57,6 @@ const Create = () => {
   const [submitting, setSubmitting] = useState(false);
 
   const handleProjectSubmit = async () => {
-    console.log(project);
     if (!user) return;
     setSubmitting(true);
     const res = await ProjectsManager.addProject(project, user.uid);

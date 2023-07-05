@@ -5,6 +5,7 @@
   padding: 0 $horizontalPadding;
   display: flex;
   flex-direction: column;
+  overflow-y: auto;
 
   .projectsHeading {
     display: flex;

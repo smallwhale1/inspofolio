@@ -1,48 +1,79 @@
 import styles from "./Music.module.scss";
+import LoadingButton from "@/components/common/LoadingButton";
 import { Project } from "@/models/models";
 import { useEffect, useState } from "react";
-import { SpotifyManager } from "@/util/SpotifyManager";
+import { SpotifyManager, SpotifyUser } from "@/util/SpotifyManager";
 import { useRouter } from "next/router";
-import LoadingButton from "@/components/common/LoadingButton";
 import { BsSpotify } from "react-icons/bs";
-import FoldingBoxesLoader from "@/components/common/animation/FoldingBoxesLoader";
 import { Spotify } from "react-spotify-embed";
+import { Button } from "@mui/material";
+
+import dynamic from "next/dynamic";
+import { ProjectsManager } from "@/firebase/ProjectsManager";
+
+const SpotifyPlayer = dynamic(() => import("react-spotify-web-playback"), {
+  loading: () => <p>Loading...</p>,
+});
 
 type Props = {
   project: Project;
 };
 
-interface SpotifyUser {
-  country: string;
-  display_name: string;
-  email: string;
-  external_urls: string[];
-  followers: { href: string | null; total: number };
-  href: string;
-  id: string;
-  images: string[];
-  product: string;
-  type: string;
-  uri: string;
-}
 const Music = ({ project }: Props) => {
   const [user, setUser] = useState<SpotifyUser | null>(null);
-  const [loggedIn, setLoggedIn] = useState(false);
   const [loading, setLoading] = useState(true);
+  const [userPlaylists, setUserPlaylists] = useState<string[]>([]);
+  const [token, setToken] = useState("");
+  const [currProject, setCurrProject] = useState<Project>(project);
   const router = useRouter();
+
+  const handleAdd = async (playlist: string) => {
+    if (currProject.playlists.some((ls) => ls === playlist)) {
+      console.log("Playlist has already been added.");
+      return;
+    }
+    setUserPlaylists((prev) => prev.filter((url) => url !== playlist));
+    const res = await ProjectsManager.updateProject(project._id, "playlists", [
+      ...currProject.playlists,
+      playlist,
+    ]);
+    setCurrProject((prev) => ({
+      ...prev,
+      playlists: [...prev.playlists, playlist],
+    }));
+  };
+
+  const handleRemove = async (url: string) => {
+    setCurrProject((prev) => ({
+      ...prev,
+      playlists: prev.playlists.filter((playlist) => playlist !== url),
+    }));
+    const res = await ProjectsManager.updateProject(
+      project._id,
+      "playlists",
+      currProject.playlists.filter((playlist) => playlist !== url)
+    );
+    setUserPlaylists((prev) => [...prev, url]);
+  };
 
   useEffect(() => {
     const token = localStorage.getItem("access_token");
+    if (!token) {
+      setLoading(false);
+      return;
+    }
+    setToken(token);
+  }, []);
+
+  useEffect(() => {
     if (!token) return;
     const getUser = async () => {
       setLoading(true);
       const user = await SpotifyManager.getUserInfo(token);
-      console.log(user);
       if (typeof user === "string") {
         // error
         router.push(`/linkSpotify`);
       } else {
-        setLoggedIn(true);
         const spotifyUser = user as SpotifyUser;
         setUser(spotifyUser);
       }
@@ -50,37 +81,91 @@ const Music = ({ project }: Props) => {
     };
 
     getUser();
-  }, [router]);
+  }, [router, token]);
+
+  useEffect(() => {
+    if (!user) return;
+    const token = localStorage.getItem("access_token");
+    if (!token) {
+      setLoading(false);
+      return;
+    }
+    const fetchPlaylists = async () => {
+      const res = await SpotifyManager.getUserPlaylists(user.id, token);
+      if (typeof res === "string") {
+      } else {
+        setUserPlaylists(
+          res.items
+            .map((item) => item.external_urls.spotify)
+            .filter((url) => !currProject.playlists.some((p) => p === url))
+        );
+      }
+    };
+
+    fetchPlaylists();
+  }, [user]);
 
   return (
     <div className={styles.music}>
-      {loading && <FoldingBoxesLoader />}
       {!loading &&
-        (loggedIn ? (
+        (user && token !== "" ? (
           <div className={styles.music}>
-            <p>Logged in as {user?.display_name}</p>
-            <h3>Recommended</h3>
+            <h3>Project Playlists</h3>
             <div className={styles.musicContainer}>
-              <Spotify
-                link="https://open.spotify.com/album/2QJmrSgbdM35R67eoGQo4j"
-                width={"100%"}
-              />
-              <Spotify
-                link="https://open.spotify.com/album/5M8td2xvD7Vg9FNAhEFJj1"
-                width={"100%"}
-              />
+              {currProject.playlists.map((playlist) => (
+                <div key={playlist}>
+                  <Spotify link={playlist} />
+                  <div className={styles.btnContainer}>
+                    <Button
+                      fullWidth
+                      variant="contained"
+                      color="secondary"
+                      onClick={() => {
+                        handleRemove(playlist);
+                      }}
+                    >
+                      remove
+                    </Button>
+                  </div>
+                </div>
+              ))}
+            </div>
+            <h3>Your Other Playlists</h3>
+            <div className={styles.musicContainer}>
+              {userPlaylists.map((playlist) => (
+                <div key={playlist}>
+                  <Spotify link={playlist} />
+                  <div className={styles.btnContainer}>
+                    <Button
+                      fullWidth
+                      variant="contained"
+                      color="secondary"
+                      onClick={() => {
+                        handleAdd(playlist);
+                      }}
+                    >
+                      add
+                    </Button>
+                    {/* <Button fullWidth variant="contained">
+                        play
+                      </Button> */}
+                  </div>
+                </div>
+              ))}
             </div>
           </div>
         ) : (
-          <LoadingButton
-            color="secondary"
-            icon={<BsSpotify color="#00c56c" size={20} />}
-            text="connect to spotify"
-            onSubmit={() => {
-              router.push(`/linkSpotify?createdProject=${project._id}`);
-            }}
-            loading={false}
-          />
+          <div style={{ alignSelf: "flex-start" }}>
+            <LoadingButton
+              color="secondary"
+              icon={<BsSpotify color="#00c56c" size={20} />}
+              text="connect to spotify"
+              onSubmit={() => {
+                router.push(`/linkSpotify?createdProject=${project._id}`);
+              }}
+              loading={false}
+            />
+          </div>
         ))}
     </div>
   );

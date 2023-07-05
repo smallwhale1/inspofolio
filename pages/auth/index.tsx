@@ -86,7 +86,7 @@ const Auth = () => {
           password
         );
         if (typeof signInRes === "string") {
-          // error occured, toast messgae
+          // error occured, toast message
         } else {
           nextRoute.current = "/create";
           setExiting(true);

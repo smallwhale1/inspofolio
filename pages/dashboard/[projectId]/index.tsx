@@ -11,10 +11,11 @@ import { ProjectSection } from "@/util/enums";
 import { useRouter } from "next/router";
 import { AuthContext } from "@/contexts/AuthContext";
 import LoadingButton from "@/components/common/LoadingButton";
-import { useTheme } from "@mui/material";
+import { IconButton, useTheme } from "@mui/material";
 import { IoMdAddCircleOutline } from "react-icons/io";
 import EditModal from "@/components/dashboard/projectPage/EditModal";
 import AddLinks from "@/components/create/steps/AddLinks";
+import { BiPlus } from "react-icons/bi";
 
 type Props = {};
 
@@ -29,6 +30,25 @@ const Project = (props: Props) => {
   const [modalOpen, setModalOpen] = useState(false);
   const [modalSubmitting, setModalSubmitting] = useState(false);
   const theme = useTheme();
+
+  const [minimized, setMinimized] = useState(false);
+
+  const handleResize = () => {
+    if (window.innerWidth <= 600) {
+      setMinimized(true);
+    } else {
+      setMinimized(false);
+    }
+  };
+
+  useEffect(() => {
+    window.addEventListener("resize", handleResize);
+    handleResize();
+
+    return () => {
+      window.removeEventListener("resize", handleResize);
+    };
+  }, []);
 
   const getSection = () => {
     if (!project) return <></>;
@@ -116,7 +136,6 @@ const Project = (props: Props) => {
       if (typeof res === "string") {
         // error
       } else {
-        console.log(res);
         setProject(res);
       }
     };
@@ -139,18 +158,23 @@ const Project = (props: Props) => {
         {project && (
           <div className={styles.sectionTop}>
             <h2 className={styles.sectionHeading}>{projectSection}</h2>
-            {projectSection !== ProjectSection.MUSIC && (
-              <LoadingButton
-                text="Add"
-                icon={<IoMdAddCircleOutline size={20} />}
-                iconRight
-                color="primary"
-                onSubmit={() => {
-                  setModalOpen(true);
-                }}
-                loading={false}
-              />
-            )}
+            {projectSection !== ProjectSection.MUSIC &&
+              (minimized ? (
+                <IconButton color="primary">
+                  <BiPlus />
+                </IconButton>
+              ) : (
+                <LoadingButton
+                  text="Add"
+                  icon={<IoMdAddCircleOutline size={20} />}
+                  iconRight
+                  color="primary"
+                  onSubmit={() => {
+                    setModalOpen(true);
+                  }}
+                  loading={false}
+                />
+              ))}
           </div>
         )}
         {project ? getSection() : <></>}

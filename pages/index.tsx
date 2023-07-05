@@ -1,5 +1,4 @@
 import styles from "@/styles/Home.module.scss";
-import Logo from "@/components/common/Logo";
 import { useTheme } from "@mui/material";
 import { useRouter } from "next/router";
 import { useContext, useEffect, useState } from "react";
@@ -8,7 +7,7 @@ import FoldingBoxesLoader from "@/components/common/animation/FoldingBoxesLoader
 
 // in seconds
 const animationDuration = 1;
-const delay = 6;
+const delay = 4;
 
 export default function Home() {
   const theme = useTheme();

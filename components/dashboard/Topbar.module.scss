@@ -16,6 +16,21 @@
     align-items: center;
     gap: 2rem;
     list-style-type: none;
+
+    .btnItem {
+      position: relative;
+
+      .profilePopup {
+        position: absolute;
+        top: 100%;
+        right: 0;
+        padding: 1rem;
+        text-align: center;
+        border-radius: 0.5rem;
+        border: 1px solid;
+        z-index: 999;
+      }
+    }
   }
 }
 

@@ -19,8 +19,8 @@ type Props = {
 
 enum LinkView {
   ALL = "all",
-  PINTEREST = "pinterest",
   INSTAGRAM = "instagram",
+  PINTEREST = "pinterest",
   TIKTOK = "tiktok",
   YOUTUBE = "youtube",
   TWITTER = "twitter",
@@ -55,10 +55,8 @@ const Links = ({ project, removeLink }: Props) => {
               .map((link, i) => (
                 <PinterestEmbed key={i} url={link.url} width={"100%"} />
               ))}
-            {/* <PinterestEmbed
-              url="https://www.pinterest.com/pin/676665912776579299/"
-              width="100%"
-            /> */}
+            <div></div>
+            <div></div>
           </div>
         );
       case LinkView.INSTAGRAM:
@@ -69,10 +67,8 @@ const Links = ({ project, removeLink }: Props) => {
               .map((link, i) => (
                 <InstagramEmbed key={i} url={link.url} width={"100%"} />
               ))}
-            {/* <InstagramEmbed
-              url="https://www.instagram.com/p/CuSXCmjsU6Y/"
-              width={"100%"}
-            /> */}
+            <div></div>
+            <div></div>
           </div>
         );
       case LinkView.YOUTUBE:
@@ -83,10 +79,6 @@ const Links = ({ project, removeLink }: Props) => {
               .map((link, i) => (
                 <YouTubeEmbed key={i} url={link.url} width={"100%"} />
               ))}
-            {/* <YouTubeEmbed
-              url="https://www.youtube.com/watch?v=v26G0KYCTKk&list=WL&index=4"
-              width="100%"
-            /> */}
           </div>
         );
       case LinkView.TWITTER:
@@ -97,10 +89,6 @@ const Links = ({ project, removeLink }: Props) => {
               .map((link, i) => (
                 <TwitterEmbed key={i} url={link.url} width={"100%"} />
               ))}
-            {/* <TwitterEmbed
-              url="https://twitter.com/WolfeyGlick/status/1675583144043458562"
-              width="100%"
-            /> */}
           </div>
         );
       case LinkView.TIKTOK:
