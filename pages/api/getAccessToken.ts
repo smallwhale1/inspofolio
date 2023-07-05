@@ -3,7 +3,6 @@ import type { NextApiRequest, NextApiResponse } from "next";
 import axios from "axios";
 import queryString from "querystring";
 import { SpotifyAccess } from "@/util/interfaces";
-import { redirectUri } from "@/util/constants";
 
 type APIError = {
   message: string;
@@ -20,7 +19,7 @@ export default async function handler(
     method: "post",
     data: queryString.stringify({
       code: code,
-      redirect_uri: redirectUri,
+      redirect_uri: process.env.NEXT_PUBLIC_REDIRECT_URI,
       grant_type: "authorization_code",
     }),
     headers: {

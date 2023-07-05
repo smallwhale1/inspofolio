@@ -2,7 +2,7 @@ export const fadeDuration = 0.7;
 export const navbarLogoSize = "1rem";
 
 // spotify
-export const redirectUri = "http://localhost:3000/linkSpotify";
+export const redirectUri = process.env.NEXT_PUBLIC_REDIRECT_URI;
 export const scope =
   "streaming app-remote-control " +
   "user-read-private user-read-email " +

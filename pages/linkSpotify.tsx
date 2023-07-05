@@ -3,7 +3,7 @@ import queryString from "query-string";
 import { Button, useTheme } from "@mui/material";
 import { useRouter } from "next/router";
 import { useEffect, useState } from "react";
-import { redirectUri, scope } from "@/util/constants";
+import { scope } from "@/util/constants";
 import LoadingButton from "@/components/common/LoadingButton";
 import { SpotifyManager } from "@/util/SpotifyManager";
 import { BsSpotify } from "react-icons/bs";
@@ -52,7 +52,7 @@ const LinkSpotify = () => {
               response_type: "code",
               client_id: process.env.NEXT_PUBLIC_SPOTIFY_CLIENT_ID,
               scope: scope,
-              redirect_uri: redirectUri,
+              redirect_uri: process.env.NEXT_PUBLIC_REDIRECT_URI,
               show_dialog: true,
             })
           }
