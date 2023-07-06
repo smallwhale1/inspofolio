@@ -14,11 +14,16 @@ export interface Tag {
   tag: string;
 }
 
-export interface ImageData {
+export interface ImageUpload {
   _id: string;
-  colors: string[];
   file: File;
   previewUrl: string;
+}
+
+export interface ImageData {
+  _id: string;
+  colors: FinalColor[];
+  url: string;
 }
 
 // main
@@ -27,11 +32,11 @@ export interface Project {
   uid: string;
   name: string;
   description: string;
-  imageUrls: string[];
-  palette: FinalColor[];
-  tags: string[];
+  imgs: ImageData[];
   links: Link[];
-  playlists: string[];
+  palette: FinalColor[];
+  tags: Tag[];
+  playlist: string[];
   createdAt: Date;
   shared: boolean;
 }

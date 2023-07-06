@@ -1,39 +1,57 @@
-import { ImageData } from "@/models/models";
 import styles from "./AddImages.module.scss";
+import { ImageUpload } from "@/models/models";
+import { ListManager } from "@/util/ListManager";
 import { Button, IconButton, useTheme } from "@mui/material";
-import { useCallback } from "react";
+import { useCallback, useState } from "react";
 import { useDropzone } from "react-dropzone";
 import { AiOutlineUpload } from "react-icons/ai";
 import { BiX } from "react-icons/bi";
 
-interface ImagesProps {
-  imgs: ImageData[];
-  onBack: () => void;
+export interface ImageCreateProps {
+  imgs: ImageUpload[];
   onSubmit: () => void;
-  onAdd: (imgFils: File[]) => void;
+  onBack: () => void;
+  onAdd: (imgFiles: File[]) => void;
   onRemove: (id: string) => void;
+}
+
+export interface ImageEditProps {
+  onSubmit: (newImgs: ImageUpload[]) => Promise<void>;
+}
+
+interface ImagesProps {
+  createProps?: ImageCreateProps;
+  editProps?: ImageEditProps;
 }
 
 // max number of images users can upload
 const maxImages = 20;
 
-const AddImages = ({
-  imgs,
-  onAdd,
-  onRemove,
-  onSubmit,
-  onBack,
-}: ImagesProps) => {
+const AddImages = ({ createProps, editProps }: ImagesProps) => {
   const theme = useTheme();
-  const onDrop = useCallback(
+  const onDropCreate = useCallback(
     (acceptedFiles: File[]) => {
       if (!acceptedFiles || acceptedFiles.length > maxImages) return;
-      onAdd(acceptedFiles);
+      createProps?.onAdd(acceptedFiles);
     },
-    [onAdd]
+    [createProps?.onAdd]
   );
+  const [currImgs, setCurrImgs] = useState<ImageUpload[]>([]);
+
+  const onDropEdit = useCallback((acceptedFiles: File[]) => {
+    if (!acceptedFiles || acceptedFiles.length > maxImages) return;
+    setCurrImgs((prev) => [
+      ...prev,
+      ...acceptedFiles.map((file, i) => ({
+        _id: ListManager.getNewId(prev, i),
+        file: file,
+        previewUrl: URL.createObjectURL(file),
+      })),
+    ]);
+  }, []);
+
   const { getRootProps, getInputProps, isDragActive } = useDropzone({
-    onDrop,
+    onDrop: createProps ? onDropCreate : onDropEdit,
     accept: {
       "image/png": [".png"],
       "image/jpg": [".jpg"],
@@ -65,41 +83,75 @@ const AddImages = ({
         )}
       </div>
       <div className={styles.imgPreviews}>
-        {imgs.map((img) => (
-          <div key={img._id} className={styles.imgWrapper}>
-            <div className={styles.imgContainer}>
-              <img
-                className={styles.imgPreview}
-                src={img.previewUrl}
-                alt={"reference"}
-                height={100}
-              />
-            </div>
-            <IconButton
-              onClick={() => {
-                onRemove(img._id);
-              }}
-              className={styles.closeBtn}
-            >
-              <BiX color="#ffffff" />
-            </IconButton>
-          </div>
-        ))}
+        {createProps
+          ? createProps.imgs.map((img) => (
+              <div key={img._id} className={styles.imgWrapper}>
+                <div className={styles.imgContainer}>
+                  <img
+                    className={styles.imgPreview}
+                    src={img.previewUrl}
+                    alt={"reference"}
+                    height={100}
+                  />
+                </div>
+                <IconButton
+                  onClick={() => {
+                    createProps.onRemove(img._id);
+                  }}
+                  className={styles.closeBtn}
+                >
+                  <BiX color="#ffffff" />
+                </IconButton>
+              </div>
+            ))
+          : currImgs.map((img) => (
+              <div key={img._id} className={styles.imgWrapper}>
+                <div className={styles.imgContainer}>
+                  <img
+                    className={styles.imgPreview}
+                    src={img.previewUrl}
+                    alt={"reference"}
+                    height={100}
+                  />
+                </div>
+                <IconButton
+                  onClick={() => {
+                    setCurrImgs((prev) =>
+                      prev.filter((im) => im._id !== img._id)
+                    );
+                  }}
+                  className={styles.closeBtn}
+                >
+                  <BiX color="#ffffff" />
+                </IconButton>
+              </div>
+            ))}
       </div>
       {/* Buttons */}
-      <div className={styles.btnContainer}>
-        <Button variant="text" onClick={onBack}>
-          previous
-        </Button>
+      {createProps && (
+        <div className={styles.btnContainer}>
+          <Button variant="text" onClick={createProps.onBack}>
+            previous
+          </Button>
+          <Button
+            variant={createProps.imgs.length === 0 ? "text" : "contained"}
+            onClick={() => {
+              createProps.onSubmit();
+            }}
+          >
+            {createProps.imgs.length === 0 ? "skip" : "continue"}
+          </Button>
+        </div>
+      )}
+      {editProps && (
         <Button
-          variant={imgs.length === 0 ? "text" : "contained"}
           onClick={() => {
-            onSubmit();
+            editProps.onSubmit(currImgs);
           }}
         >
-          {imgs.length === 0 ? "skip" : "continue"}
+          submit
         </Button>
-      </div>
+      )}
     </div>
   );
 };

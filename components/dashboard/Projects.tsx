@@ -7,6 +7,11 @@ import { AuthContext } from "@/contexts/AuthContext";
 import { Project } from "@/models/models";
 import ProjectCard from "./ProjectCard";
 
+/*
+ * TODO: Palette merging bug
+ *
+ */
+
 const Projects = () => {
   const router = useRouter();
   const { user, loading } = useContext(AuthContext);
@@ -24,6 +29,11 @@ const Projects = () => {
 
     fetchProjects();
   }, [user, loading]);
+
+  const projectDelete = async (id: string) => {
+    const res = await ProjectsManager.removeProject(id);
+    setProjects((prev) => prev.filter((project) => project._id !== id));
+  };
 
   return (
     <div className={styles.projects}>
@@ -47,14 +57,23 @@ const Projects = () => {
             ) : projects.length < 3 ? (
               <>
                 {projects.map((project) => (
-                  <ProjectCard key={project._id} project={project} />
+                  <ProjectCard
+                    key={project._id}
+                    project={project}
+                    deleteProject={projectDelete}
+                  />
                 ))}
+                {/* Placeholders for layout */}
                 <div></div>
                 <div></div>
               </>
             ) : (
               projects.map((project) => (
-                <ProjectCard key={project._id} project={project} />
+                <ProjectCard
+                  key={project._id}
+                  project={project}
+                  deleteProject={projectDelete}
+                />
               ))
             )}
           </div>

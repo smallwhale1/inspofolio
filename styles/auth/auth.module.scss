@@ -81,6 +81,7 @@
       max-width: 550px;
       min-width: 400px;
       border-radius: 1rem;
+      transition: transform 1s ease;
 
       h2 {
         font-size: 2rem;
@@ -113,6 +114,10 @@
         align-items: center;
         gap: 1rem;
       }
+    }
+
+    .slideInRight {
+      transform: translateX(0);
     }
   }
 }
@@ -155,9 +160,6 @@
 @media (max-width: 500px) {
   .main {
     .content {
-      .left {
-      }
-
       .right {
         padding: 2rem 3rem;
 

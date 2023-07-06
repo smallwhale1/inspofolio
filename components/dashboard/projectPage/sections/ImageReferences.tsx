@@ -1,11 +1,15 @@
 import styles from "./ImageReferences.module.scss";
-import { Project } from "@/models/models";
-import { useState } from "react";
+import { ImageData, Project } from "@/models/models";
+import { useContext, useEffect, useState } from "react";
 import Masonry from "react-masonry-css";
 import ImageCard from "./ImageCard";
+import { ProjectsManager } from "@/firebase/ProjectsManager";
+import { AuthContext } from "@/contexts/AuthContext";
+import { StorageManager } from "@/firebase/StorageManager";
 
 type Props = {
   project: Project;
+  handleImgDelete: (id: string) => Promise<void>;
 };
 
 const breakCols = {
@@ -14,15 +18,8 @@ const breakCols = {
   900: 1,
 };
 
-interface ImageInfo {
-  _id: string;
-  url: string;
-}
-
-const ImageReferences = ({ project }: Props) => {
-  const [images, setImages] = useState<ImageInfo[]>(
-    project.imageUrls.map((img, i) => ({ url: img, _id: (i + 1).toString() }))
-  );
+const ImageReferences = ({ project, handleImgDelete }: Props) => {
+  const { user, loading } = useContext(AuthContext);
 
   return (
     <div className={styles.container}>
@@ -31,8 +28,8 @@ const ImageReferences = ({ project }: Props) => {
         className="my-masonry-grid"
         columnClassName="my-masonry-grid_column"
       >
-        {images.map((img) => (
-          <ImageCard key={img._id} url={img.url} />
+        {project.imgs.map((img) => (
+          <ImageCard key={img._id} img={img} imgDelete={handleImgDelete} />
         ))}
       </Masonry>
     </div>

@@ -1,5 +1,19 @@
-import { SpotifyAccess, SpotifyRefresh } from "./interfaces";
 import { FinalColor } from "extract-colors";
+
+export interface SpotifyAccess {
+  access_token: string;
+  token_type: string;
+  scope: string;
+  expires_in: number;
+  refresh_token: string;
+}
+
+export interface SpotifyRefresh {
+  access_token: string;
+  token_type: string;
+  scope: string;
+  expires_in: number;
+}
 
 export interface SpotifyUser {
   country: string;
@@ -70,10 +84,9 @@ export class SpotifyManager {
   };
 
   static getUserPlaylists = async (
-    userId: string,
     token: string
   ): Promise<UserPlaylists | string> => {
-    const url = `https://api.spotify.com/v1/users/${userId}/playlists?user_id=${userId}&limit=5`;
+    const url = `https://api.spotify.com/v1/me/playlists?limit=5`;
     const res = await fetch(url, {
       method: "GET",
       headers: { Authorization: `Bearer ${token}` },

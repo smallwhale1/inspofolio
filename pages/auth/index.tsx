@@ -113,7 +113,7 @@ const Auth = () => {
     if (bgImgLoaded) {
       setTimeout(() => {
         setVisible(true);
-      }, 500);
+      }, 300);
     }
   }, [bgImgLoaded]);
 
@@ -169,7 +169,7 @@ const Auth = () => {
             </div>
           )}
           {/* Right side */}
-          <div className={styles.right}>
+          <div className={`${styles.right}`}>
             {isResponsive && (
               <Logo
                 color={theme.palette.secondary.main}

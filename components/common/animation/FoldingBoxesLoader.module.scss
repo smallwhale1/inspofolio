@@ -37,16 +37,27 @@
 $size: 60px;
 $primary-color: rgb(68, 199, 255);
 
+// linear
+$linear1: #c45fff;
+$linear2: #975fff;
+$linear3: #6f5fff;
+$linear4: #5f7aff;
+$linear5: #5faaff;
+$linear6: #5f7aff;
+$linear7: #6f5fff;
+$linear8: #975fff;
+$linear9: #00000000;
+
 // rainbow line
 $rainbow1: #ff5f6f;
 $rainbow2: #ff5fc4;
 $rainbow3: #f25fff;
 $rainbow4: #c45fff;
-$rainbow5: #975fff;
+$rainbow5: #9961ff;
 $rainbow6: #6f5fff;
 $rainbow7: #5f7aff;
 $rainbow8: #5faaff;
-$rainbow9: #54c7fc;
+$rainbow9: #54c7fc00;
 
 // blue line
 $blue1: rgb(0, 29, 246);
@@ -70,7 +81,7 @@ $blue9: rgb(0, 226, 246);
     position: relative;
     width: $size / 3;
     height: $size / 3;
-    @include transform(scale(1.1));
+    @include transform(scale(1));
     display: inline-block;
     &::before {
       content: "";
@@ -84,19 +95,19 @@ $blue9: rgb(0, 226, 246);
       -ms-transform-origin: 100% 100%;
       -webkit-transform-origin: 100% 100%;
       transform-origin: 100% 100%;
-      @include animation(folding 5.7s infinite linear both);
+      @include animation(folding 5.4s infinite linear both);
     }
   }
 
   .leaf1 {
-    @include transform(rotateZ(0deg) scale(1.1));
+    @include transform(rotateZ(0deg) scale(1));
     &::before {
       background-color: $rainbow1;
     }
   }
 
   .leaf2 {
-    @include transform(rotateZ(0deg) scale(1.1));
+    @include transform(rotateZ(0deg) scale(1));
     &::before {
       -webkit-animation-delay: 0.3s;
       animation-delay: 0.3s;
@@ -105,7 +116,7 @@ $blue9: rgb(0, 226, 246);
     }
   }
   .leaf3 {
-    @include transform(rotateZ(0deg) scale(1.1));
+    @include transform(rotateZ(0deg) scale(1));
     &::before {
       -webkit-animation-delay: 0.6s;
       animation-delay: 0.6s;
@@ -114,7 +125,7 @@ $blue9: rgb(0, 226, 246);
     }
   }
   .leaf6 {
-    @include transform(rotateZ(90deg) scale(1.1));
+    @include transform(rotateZ(90deg) scale(1));
     &::before {
       -webkit-animation-delay: 0.9s;
       animation-delay: 0.9s;
@@ -123,7 +134,7 @@ $blue9: rgb(0, 226, 246);
     }
   }
   .leaf9 {
-    @include transform(rotateZ(90deg) scale(1.1));
+    @include transform(rotateZ(90deg) scale(1));
     &::before {
       -webkit-animation-delay: 1.2s;
       animation-delay: 1.2s;
@@ -132,7 +143,7 @@ $blue9: rgb(0, 226, 246);
     }
   }
   .leaf8 {
-    @include transform(rotateZ(180deg) scale(1.1));
+    @include transform(rotateZ(180deg) scale(1));
     &::before {
       -webkit-animation-delay: 1.5s;
       animation-delay: 1.5s;
@@ -141,7 +152,7 @@ $blue9: rgb(0, 226, 246);
     }
   }
   .leaf7 {
-    @include transform(rotateZ(180deg) scale(1.1));
+    @include transform(rotateZ(180deg) scale(1));
     &::before {
       -webkit-animation-delay: 1.8s;
       animation-delay: 1.8s;
@@ -150,7 +161,7 @@ $blue9: rgb(0, 226, 246);
     }
   }
   .leaf4 {
-    @include transform(rotateZ(-90deg) scale(1.1));
+    @include transform(rotateZ(-90deg) scale(1));
     &::before {
       -webkit-animation-delay: 2.1s;
       animation-delay: 2.1s;
@@ -159,7 +170,7 @@ $blue9: rgb(0, 226, 246);
     }
   }
   .leaf5 {
-    @include transform(rotateZ(0deg) scale(1.1));
+    @include transform(rotateZ(0deg) scale(1));
     &::before {
       -webkit-animation-delay: 2.4s;
       animation-delay: 2.4s;

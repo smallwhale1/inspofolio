@@ -19,6 +19,8 @@ type Props = {
   project: Project;
 };
 
+// Needs rennovation - multiple playlists => one playlist
+
 const Music = ({ project }: Props) => {
   const [user, setUser] = useState<SpotifyUser | null>(null);
   const [loading, setLoading] = useState(true);
@@ -28,31 +30,31 @@ const Music = ({ project }: Props) => {
   const router = useRouter();
 
   const handleAdd = async (playlist: string) => {
-    if (currProject.playlists.some((ls) => ls === playlist)) {
+    if (currProject.playlist.some((ls) => ls === playlist)) {
       console.log("Playlist has already been added.");
       return;
     }
     setUserPlaylists((prev) => prev.filter((url) => url !== playlist));
-    const res = await ProjectsManager.updateProject(project._id, "playlists", [
-      ...currProject.playlists,
-      playlist,
-    ]);
+    // const res = await ProjectsManager.updateProject(project._id, "playlists", [
+    //   ...currProject.playlist,
+    //   playlist,
+    // ]);
     setCurrProject((prev) => ({
       ...prev,
-      playlists: [...prev.playlists, playlist],
+      playlist: [...prev.playlist, playlist],
     }));
   };
 
   const handleRemove = async (url: string) => {
     setCurrProject((prev) => ({
       ...prev,
-      playlists: prev.playlists.filter((playlist) => playlist !== url),
+      playlist: prev.playlist.filter((playlist) => playlist !== url),
     }));
-    const res = await ProjectsManager.updateProject(
-      project._id,
-      "playlists",
-      currProject.playlists.filter((playlist) => playlist !== url)
-    );
+    // const res = await ProjectsManager.updateProject(
+    //   project._id,
+    //   "playlists",
+    //   currProject.playlist.filter((playlist) => playlist !== url)
+    // );
     setUserPlaylists((prev) => [...prev, url]);
   };
 
@@ -91,13 +93,13 @@ const Music = ({ project }: Props) => {
       return;
     }
     const fetchPlaylists = async () => {
-      const res = await SpotifyManager.getUserPlaylists(user.id, token);
+      const res = await SpotifyManager.getUserPlaylists(token);
       if (typeof res === "string") {
       } else {
         setUserPlaylists(
           res.items
             .map((item) => item.external_urls.spotify)
-            .filter((url) => !currProject.playlists.some((p) => p === url))
+            .filter((url) => !currProject.playlist.some((p) => p === url))
         );
       }
     };
@@ -112,7 +114,7 @@ const Music = ({ project }: Props) => {
           <div className={styles.music}>
             <h3>Project Playlists</h3>
             <div className={styles.musicContainer}>
-              {currProject.playlists.map((playlist) => (
+              {currProject.playlist.map((playlist) => (
                 <div key={playlist}>
                   <Spotify link={playlist} />
                   <div className={styles.btnContainer}>
@@ -147,8 +149,8 @@ const Music = ({ project }: Props) => {
                       add
                     </Button>
                     {/* <Button fullWidth variant="contained">
-                        play
-                      </Button> */}
+                      play
+                    </Button> */}
                   </div>
                 </div>
               ))}

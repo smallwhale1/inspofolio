@@ -1,37 +1,55 @@
 import styles from "../../../styles/dashboard/projectPage/projectPage.module.scss";
 import ImageReferences from "@/components/dashboard/projectPage/sections/ImageReferences";
 import Links from "@/components/dashboard/projectPage/sections/Links";
+import LoadingButton from "@/components/common/LoadingButton";
+import EditModal from "@/components/dashboard/projectPage/EditModal";
+import AddLinks from "@/components/create/steps/AddLinks";
+import AuthGuardedLayout from "@/components/common/authGuarded/_layout";
 import ProjectLayout from "@/components/dashboard/projectPage/_layout";
-import { useContext, useEffect, useRef, useState } from "react";
 import Palette from "@/components/dashboard/projectPage/sections/Palette";
 import Music from "@/components/dashboard/projectPage/sections/Music";
+import { useContext, useEffect, useState } from "react";
 import { ProjectsManager } from "@/firebase/ProjectsManager";
-import { Link, Project } from "@/models/models";
+import { ImageUpload, Link, Project } from "@/models/models";
 import { ProjectSection } from "@/util/enums";
 import { useRouter } from "next/router";
 import { AuthContext } from "@/contexts/AuthContext";
-import LoadingButton from "@/components/common/LoadingButton";
 import { IconButton, useTheme } from "@mui/material";
 import { IoMdAddCircleOutline } from "react-icons/io";
-import EditModal from "@/components/dashboard/projectPage/EditModal";
-import AddLinks from "@/components/create/steps/AddLinks";
 import { BiPlus } from "react-icons/bi";
+import AddImages from "@/components/create/steps/AddImages";
+import { StorageManager } from "@/firebase/StorageManager";
 
-type Props = {};
-
-const Project = (props: Props) => {
+const Project = () => {
   const router = useRouter();
   const [projectSection, setProjectSection] = useState<ProjectSection>(
     ProjectSection.IMAGES
   );
+  const [routeValidity, setRouteValidity] = useState<
+    "loading" | "valid" | "invalid"
+  >("loading");
   const [project, setProject] = useState<Project | null>(null);
   const { user, loading } = useContext(AuthContext);
-  const fetchedData = useRef(false);
   const [modalOpen, setModalOpen] = useState(false);
   const [modalSubmitting, setModalSubmitting] = useState(false);
   const theme = useTheme();
 
   const [minimized, setMinimized] = useState(false);
+
+  const handleImgDelete = async (id: string) => {
+    if (!user || !project) return;
+    const res = await StorageManager.removeImg(id, user.uid);
+    const projectRes = await ProjectsManager.updateProject(
+      project._id,
+      "imgs",
+      project.imgs.filter((img) => img._id !== id)
+    );
+    setProject((prev) =>
+      prev
+        ? { ...prev, imgs: prev?.imgs.filter((img) => img._id !== id) }
+        : null
+    );
+  };
 
   const handleResize = () => {
     if (window.innerWidth <= 600) {
@@ -54,7 +72,12 @@ const Project = (props: Props) => {
     if (!project) return <></>;
     switch (projectSection) {
       case ProjectSection.IMAGES:
-        return <ImageReferences project={project} />;
+        return (
+          <ImageReferences
+            project={project}
+            handleImgDelete={handleImgDelete}
+          />
+        );
       case ProjectSection.LINKS:
         return <Links removeLink={handleLinkRemove} project={project} />;
       case ProjectSection.PALETTE:
@@ -107,11 +130,30 @@ const Project = (props: Props) => {
     );
   };
 
+  const handleImgUpdate = async (newImgs: ImageUpload[]) => {
+    if (!project || !user) return;
+    const imgs = await ProjectsManager.updateImages(project, newImgs, user.uid);
+    if (typeof imgs === "string") {
+      // handle error
+      return;
+    }
+    setProject((prev) =>
+      prev === null ? null : { ...prev, imgs: [...prev.imgs, ...imgs] }
+    );
+    setModalOpen(false);
+  };
+
   const getModalContent = () => {
     if (!project) return <></>;
     switch (projectSection) {
       case ProjectSection.IMAGES:
-        return <div>To be implemented</div>;
+        return (
+          <AddImages
+            editProps={{
+              onSubmit: handleImgUpdate,
+            }}
+          />
+        );
       case ProjectSection.LINKS:
         return (
           <AddLinks
@@ -131,12 +173,13 @@ const Project = (props: Props) => {
     const id = router.asPath.split("/").pop();
     if (!id || !user) return;
     const fetchProject = async () => {
-      fetchedData.current = true;
       const res = await ProjectsManager.getProject(id);
       if (typeof res === "string") {
         // error
+        setRouteValidity("invalid");
       } else {
         setProject(res);
+        setRouteValidity("valid");
       }
     };
 
@@ -150,39 +193,48 @@ const Project = (props: Props) => {
   }, [router]);
 
   return (
-    <ProjectLayout
-      projectSection={projectSection}
-      setProjectSection={setProjectSection}
-    >
+    <AuthGuardedLayout>
       <>
-        {project && (
-          <div className={styles.sectionTop}>
-            <h2 className={styles.sectionHeading}>{projectSection}</h2>
-            {projectSection !== ProjectSection.MUSIC &&
-              (minimized ? (
-                <IconButton color="primary">
-                  <BiPlus />
-                </IconButton>
-              ) : (
-                <LoadingButton
-                  text="Add"
-                  icon={<IoMdAddCircleOutline size={20} />}
-                  iconRight
-                  color="primary"
-                  onSubmit={() => {
-                    setModalOpen(true);
-                  }}
-                  loading={false}
-                />
-              ))}
-          </div>
-        )}
-        {project ? getSection() : <></>}
-        <EditModal modalOpen={modalOpen} setModalOpen={setModalOpen}>
-          {getModalContent()}
-        </EditModal>
+        {routeValidity !== "loading" &&
+          (routeValidity === "valid" ? (
+            <ProjectLayout
+              projectSection={projectSection}
+              setProjectSection={setProjectSection}
+            >
+              <>
+                {project && (
+                  <div className={styles.sectionTop}>
+                    <h2 className={styles.sectionHeading}>{projectSection}</h2>
+                    {projectSection !== ProjectSection.MUSIC &&
+                      (minimized ? (
+                        <IconButton color="primary">
+                          <BiPlus />
+                        </IconButton>
+                      ) : (
+                        <LoadingButton
+                          text="Add"
+                          icon={<IoMdAddCircleOutline size={20} />}
+                          iconRight
+                          color="primary"
+                          onSubmit={() => {
+                            setModalOpen(true);
+                          }}
+                          loading={false}
+                        />
+                      ))}
+                  </div>
+                )}
+                {project ? getSection() : <></>}
+                <EditModal modalOpen={modalOpen} setModalOpen={setModalOpen}>
+                  {getModalContent()}
+                </EditModal>
+              </>
+            </ProjectLayout>
+          ) : (
+            <div>You aren't authorized to access this resource.</div>
+          ))}
       </>
-    </ProjectLayout>
+    </AuthGuardedLayout>
   );
 };
 

@@ -1,12 +1,13 @@
 .projectCard {
+  position: relative;
   height: 100%;
   display: flex;
   flex-direction: column;
   border-radius: 1rem;
-  color: #000000;
   background-color: #ffffff;
   transition: scale 0.2s ease;
-  box-shadow: 0 0 15px #e0e0e07c;
+  color: #000000;
+  box-shadow: 0 0 1rem #e0e0e07c;
 
   &:hover {
     scale: 1.02;
@@ -14,8 +15,8 @@
 
   .imgContainer {
     position: relative;
-    border-top-left-radius: 2rem;
-    border-top-right-radius: 2rem;
+    border-top-left-radius: 1rem;
+    border-top-right-radius: 1rem;
 
     .cardImg {
       border-top-right-radius: 1rem;

@@ -1,7 +1,7 @@
 import { SetStateAction } from "react";
-import { CreateProject } from "./interfaces";
 import { ListManager } from "./ListManager";
 import { LinkManager } from "./LinkManager";
+import { CreateProject } from "@/firebase/ProjectsManager";
 
 export class CreateManager {
   static addImgs = (
@@ -63,7 +63,6 @@ export class CreateManager {
 
   static addTag = (
     newTag: string,
-    project: CreateProject,
     setProject: (value: SetStateAction<CreateProject>) => void
   ) => {
     setProject((prev) => ({

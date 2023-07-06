@@ -1,10 +1,9 @@
 import styles from "./AddTags.module.scss";
+import LoadingButton from "@/components/common/LoadingButton";
 import { Button, IconButton, TextField, useTheme } from "@mui/material";
 import { useState } from "react";
 import { Tag } from "@/models/models";
 import { BiX } from "react-icons/bi";
-import { Oval } from "react-loader-spinner";
-import LoadingButton from "@/components/common/LoadingButton";
 
 interface TagsProps {
   tags: Tag[];

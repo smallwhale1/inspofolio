@@ -1,5 +1,8 @@
-import { ListItemType } from "./interfaces";
 import { uid } from "uid";
+
+export type ListItemType = {
+  _id: string;
+} & Record<string, any>;
 
 export class ListManager {
   static getNewId = (oldList: ListItemType[], offset?: number): string => {

@@ -1,13 +1,13 @@
 import Image from "next/image";
 import styles from "./ImageCard.module.scss";
 import { useEffect, useRef, useState } from "react";
-import { extractColors } from "extract-colors";
 
 type Props = {
-  url: string;
+  img: ImageData;
+  imgDelete: (id: string) => void;
 };
 
-const ImageCard = ({ url }: Props) => {
+const ImageCard = ({ img, imgDelete }: Props) => {
   const cardRef = useRef<HTMLDivElement>(null);
   const imgAspectRatio = useRef<number>(0);
   const [imgHeight, setImgHeight] = useState(100);
@@ -29,8 +29,6 @@ const ImageCard = ({ url }: Props) => {
   }, [imgLoaded]);
 
   const handleLoadingComplete = async (img: HTMLImageElement) => {
-    // const palette = await extractColors(img);
-
     const { naturalWidth, naturalHeight } = img;
     const aspectRatio = naturalHeight / naturalWidth;
     imgAspectRatio.current = aspectRatio;
@@ -39,7 +37,7 @@ const ImageCard = ({ url }: Props) => {
 
   return (
     <>
-      <button
+      <div
         className={styles.imgCard}
         onClick={() => {
           setImgModalOpen(true);
@@ -52,17 +50,27 @@ const ImageCard = ({ url }: Props) => {
             style={{ height: imgHeight }}
           >
             <Image
-              src={url}
+              src={img.url}
               alt="project reference"
               className={styles.img}
               fill
               onLoadingComplete={handleLoadingComplete}
             />
           </div>
+          <IconButton
+            onClick={(e) => {
+              e.stopPropagation();
+              e.preventDefault();
+              imgDelete(img._id);
+            }}
+            className={styles.closeBtn}
+          >
+            <BiX color="#ffffff" />
+          </IconButton>
         </div>
-      </button>
+      </div>
       <Modal modalOpen={imgModalOpen} setModalOpen={setImgModalOpen}>
-        <ImageView imgSrc={url} />
+        <ImageView imgSrc={img.url} />
       </Modal>
     </>
   );
@@ -72,6 +80,7 @@ import { Box, IconButton, Modal as MUIModal } from "@mui/material";
 import React, { ReactElement } from "react";
 import ImageView from "./ImageView";
 import { BiX } from "react-icons/bi";
+import { ImageData } from "@/models/models";
 
 type ModalProps = {
   modalOpen: boolean;
@@ -80,7 +89,7 @@ type ModalProps = {
 };
 
 const modalStyle = {
-  position: "absolute" as "absolute",
+  position: "absolute",
   top: "50%",
   left: "50%",
   transform: "translate(-50%, -50%)",
@@ -101,6 +110,7 @@ const Modal = ({ modalOpen, setModalOpen, children }: ModalProps) => {
       <div>
         <Box sx={{ ...modalStyle }}>{children}</Box>
         <IconButton
+          sx={{ position: "absolute", top: "1rem", right: "1rem" }}
           className={styles.exitBtn}
           onClick={() => setModalOpen(false)}
         >

@@ -2,7 +2,7 @@
 import type { NextApiRequest, NextApiResponse } from "next";
 import axios from "axios";
 import queryString from "querystring";
-import { SpotifyAccess } from "@/util/interfaces";
+import { SpotifyAccess } from "@/util/SpotifyManager";
 
 type APIError = {
   message: string;

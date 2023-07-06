@@ -11,9 +11,8 @@ import { ReactNode, useContext, useEffect, useState } from "react";
 import { Playfair_Display } from "next/font/google";
 import { BsArrowRightCircle } from "react-icons/bs";
 import { fadeDuration } from "@/util/constants";
-import { CreateProject } from "@/util/interfaces";
 import { CreateManager } from "@/util/CreateManager";
-import { ProjectsManager } from "@/firebase/ProjectsManager";
+import { CreateProject, ProjectsManager } from "@/firebase/ProjectsManager";
 import { AuthContext } from "@/contexts/AuthContext";
 
 interface Step {
@@ -116,7 +115,7 @@ const Create = () => {
   };
 
   const addTag = (newTag: string) => {
-    CreateManager.addTag(newTag, project, setProject);
+    CreateManager.addTag(newTag, setProject);
   };
 
   const removeTag = (id: string) => {
@@ -149,18 +148,20 @@ const Create = () => {
       label: "Add reference images (optional).",
       component: (
         <AddImages
-          imgs={project.imgs}
-          onAdd={addImgs}
-          onRemove={removeImg}
-          onBack={() => {
-            animateStep("prev", () => {
-              setCurrStep((prev) => prev - 1);
-            });
-          }}
-          onSubmit={() => {
-            animateStep("next", () => {
-              setCurrStep((prev) => prev + 1);
-            });
+          createProps={{
+            imgs: project.imgs,
+            onAdd: addImgs,
+            onRemove: removeImg,
+            onBack: () => {
+              animateStep("prev", () => {
+                setCurrStep((prev) => prev - 1);
+              });
+            },
+            onSubmit: () => {
+              animateStep("next", () => {
+                setCurrStep((prev) => prev + 1);
+              });
+            },
           }}
         />
       ),
@@ -168,7 +169,7 @@ const Create = () => {
     {
       label: "Add links (optional).",
       description:
-        "Reference and organize all your links in one place! There is in-built support for embedded Instagram, Pinterest, Twitter, TikTok, and Youtube posts and content as long as you provide an accessible link. Ex: https://www.pinterest.com/pin/684828687110844650/, https://www.instagram.com/p/CuSXCmjsU6Y/",
+        "Reference and organize all your links in one place! There is in-built support for embedded Instagram, Pinterest, Twitter, TikTok, and Youtube posts and content as long as you provide an accessible link. Ex: https://www.pinterest.com/pin/684828687110844650/, https://www.instagram.com/p/Ct16XZCpv7V/",
       component: (
         <AddLinks
           links={project.links}

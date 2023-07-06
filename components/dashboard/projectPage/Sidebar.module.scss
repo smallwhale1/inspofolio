@@ -7,6 +7,9 @@
   width: 250px;
   z-index: 999;
   border-right: 1px solid;
+  position: sticky;
+  top: 0;
+  left: 0;
 
   .logoWrapper {
     height: $navbarHeight;

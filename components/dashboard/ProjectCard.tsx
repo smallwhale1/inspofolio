@@ -3,13 +3,15 @@ import Image from "next/image";
 import Link from "next/link";
 import { Project } from "@/models/models";
 import { useEffect, useRef, useState } from "react";
-import { useTheme } from "@mui/material";
+import { IconButton, useTheme } from "@mui/material";
+import { BiX } from "react-icons/bi";
 
 interface ProjectCardProps {
   project: Project;
+  deleteProject: (id: string) => void;
 }
 
-const ProjectCard = ({ project }: ProjectCardProps) => {
+const ProjectCard = ({ project, deleteProject }: ProjectCardProps) => {
   const cardRef = useRef<HTMLDivElement>(null);
   const [imgHeight, setImgHeight] = useState(0);
   const [imgLoaded, setImgLoaded] = useState(false);
@@ -39,13 +41,13 @@ const ProjectCard = ({ project }: ProjectCardProps) => {
             backgroundColor: theme.palette.secondary.main,
           }}
         >
-          {project.imageUrls.length > 0 && (
+          {project.imgs.length > 0 && (
             <Image
               onLoad={() => setImgLoaded(true)}
               className={`${styles.cardImg} ${
                 imgLoaded && styles.cardImgShown
               }`}
-              src={project.imageUrls[0]}
+              src={project.imgs[0].url}
               alt={`${project.name}`}
               fill
               priority
@@ -60,6 +62,20 @@ const ProjectCard = ({ project }: ProjectCardProps) => {
               : "No description provided."}
           </p>
         </div>
+        <IconButton
+          sx={{
+            position: "absolute",
+            top: "2px",
+            right: "2px",
+          }}
+          onClick={(e) => {
+            e.stopPropagation();
+            e.preventDefault();
+            deleteProject(project._id);
+          }}
+        >
+          <BiX color="#ffffff" />
+        </IconButton>
       </div>
     </Link>
   );

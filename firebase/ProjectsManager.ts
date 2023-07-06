@@ -1,9 +1,9 @@
 import { db } from "@/config/firebase";
-import { Link, Project } from "@/models/models";
-import { CreateProject } from "@/util/interfaces";
+import { ImageData, ImageUpload, Link, Project, Tag } from "@/models/models";
 import {
   addDoc,
   collection,
+  deleteDoc,
   doc,
   getDoc,
   getDocs,
@@ -13,22 +13,32 @@ import {
   where,
 } from "firebase/firestore";
 import { StorageManager } from "./StorageManager";
-import { ImageManager } from "./ImageManager";
+import { FinalColor } from "extract-colors";
+
+export interface CreateProject {
+  name: string;
+  description: string;
+  imgs: ImageUpload[];
+  palette: string[];
+  links: Link[];
+  tags: Tag[];
+}
 
 // the only difference between this and Project is _id
 interface AddProject {
   uid: string;
   name: string;
   description: string;
-  imageUrls: string[];
-  tags: string[];
+  palette: FinalColor[];
+  imgs: ImageData[];
+  tags: Tag[];
   links: Link[];
-  playlists: string[];
+  playlist: string[];
   shared: boolean;
 }
 
 // TODO: Create demo projects for users
-const DemoProject: CreateProject = {
+const demoProject: CreateProject = {
   name: "Food studies (Demo Project)",
   description: "A demo project for a project focused on food studies",
   imgs: [],
@@ -40,33 +50,23 @@ const DemoProject: CreateProject = {
 export class ProjectsManager {
   static addProject = async (project: CreateProject, uid: string) => {
     try {
-      // extract palette
-      const imgs = await ImageManager.loadImages(
-        project.imgs.map((img) => img.file)
-      );
-      const promises = imgs.map((img) => ImageManager.getImgColors(img));
-      const palettes = await Promise.all(promises);
-      const palette = palettes.flat().slice(0, 10);
-
       // handle image uploads first
-      const downloadUrls = await StorageManager.uploadImages(project.imgs, uid);
-      if (!downloadUrls) return "Failed to upload images.";
+      const storedImgs = await StorageManager.uploadImages(project.imgs, uid);
+      if (!storedImgs) return "Failed to upload images.";
 
       const newProject: AddProject = {
         uid,
         name: project.name,
         description: project.description,
-        imageUrls: downloadUrls,
-        tags: project.tags.map((tag) => tag.tag),
+        imgs: storedImgs,
+        palette: storedImgs.map((img) => img.colors).flat(),
+        tags: project.tags,
         links: project.links,
-        playlists: [],
+        playlist: [],
         shared: false,
       };
 
-      const projectRef = await addDoc(collection(db, "projects"), {
-        ...newProject,
-        palette: palette,
-      });
+      const projectRef = await addDoc(collection(db, "projects"), newProject);
 
       return {
         ...newProject,
@@ -96,6 +96,30 @@ export class ProjectsManager {
     }
   };
 
+  static updateImages = async (
+    oldProject: Project,
+    imgs: ImageUpload[],
+    userId: string
+  ): Promise<string | ImageData[]> => {
+    const storedImgs = await StorageManager.uploadImages(imgs, userId);
+    if (!storedImgs) return "Failed to upload images.";
+    const imgsRes = await this.updateProject(oldProject._id, "imgs", [
+      ...oldProject.imgs,
+      ...storedImgs,
+    ]);
+    const paletteRes = await this.updateProject(
+      oldProject._id,
+      "palette",
+      Array.from(
+        new Set([
+          ...oldProject.palette,
+          ...storedImgs.map((img) => img.colors).flat(),
+        ] as FinalColor[])
+      )
+    );
+    return storedImgs;
+  };
+
   static getProjects = async (uid: string): Promise<Project[]> => {
     const q = query(collection(db, "projects"), where("uid", "==", uid));
     const projectsSnapshot = await getDocs(q);
@@ -115,6 +139,16 @@ export class ProjectsManager {
       } else {
         return "Doc does not exist.";
       }
+    } catch (err) {
+      console.log(err);
+      return "Error.";
+    }
+  };
+
+  static removeProject = async (id: string): Promise<void | string> => {
+    try {
+      const docRef = doc(db, "projects", id);
+      await deleteDoc(docRef);
     } catch (err) {
       console.log(err);
       return "Error.";

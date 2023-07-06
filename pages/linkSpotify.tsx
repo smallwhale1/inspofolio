@@ -7,6 +7,7 @@ import { scope } from "@/util/constants";
 import LoadingButton from "@/components/common/LoadingButton";
 import { SpotifyManager } from "@/util/SpotifyManager";
 import { BsSpotify } from "react-icons/bs";
+import AuthGuardedLayout from "@/components/common/authGuarded/_layout";
 
 const LinkSpotify = () => {
   const theme = useTheme();
@@ -32,54 +33,56 @@ const LinkSpotify = () => {
   }, [router]);
 
   return (
-    <div
-      className={styles.linkSpotify}
-      style={{ backgroundColor: theme.palette.bgColor.main }}
-    >
-      <h1>Link your Spotify Account (optional)</h1>
-      <h2>
-        By linking your Spotify account, you&apos;ll be able to access your
-        playlists and add them to your projects.
-      </h2>
-      {/* <p style={{ color: theme.palette.grey500.main }}>
+    <AuthGuardedLayout>
+      <div
+        className={styles.linkSpotify}
+        style={{ backgroundColor: theme.palette.bgColor.main }}
+      >
+        <h1>Link your Spotify Account (optional)</h1>
+        <h2>
+          By linking your Spotify account, you&apos;ll be able to access your
+          playlists and add them to your projects.
+        </h2>
+        {/* <p style={{ color: theme.palette.grey500.main }}>
         *Streaming within the app only available to Spotify Premium users
       </p> */}
-      <div className={styles.btnContainer}>
-        <a
-          href={
-            "https://accounts.spotify.com/authorize?" +
-            queryString.stringify({
-              response_type: "code",
-              client_id: process.env.NEXT_PUBLIC_SPOTIFY_CLIENT_ID,
-              scope: scope,
-              redirect_uri: process.env.NEXT_PUBLIC_REDIRECT_URI,
-              show_dialog: true,
-            })
-          }
-        >
-          <LoadingButton
-            color="secondary"
-            icon={<BsSpotify color="#00c56c" size={20} />}
-            text="connect to spotify"
-            onSubmit={() => {}}
-            loading={loading}
-          />
-        </a>
-        <Button
-          variant="text"
-          color="secondary"
-          onClick={() => {
-            if (router.query.createdProject) {
-              router.push(`/dashboard/${router.query.createdProject}`);
-            } else {
-              router.push("/dashboard");
+        <div className={styles.btnContainer}>
+          <a
+            href={
+              "https://accounts.spotify.com/authorize?" +
+              queryString.stringify({
+                response_type: "code",
+                client_id: process.env.NEXT_PUBLIC_SPOTIFY_CLIENT_ID,
+                scope: scope,
+                redirect_uri: process.env.NEXT_PUBLIC_REDIRECT_URI,
+                show_dialog: true,
+              })
             }
-          }}
-        >
-          go to dashboard
-        </Button>
+          >
+            <LoadingButton
+              color="secondary"
+              icon={<BsSpotify color="#00c56c" size={20} />}
+              text="connect to spotify"
+              onSubmit={() => {}}
+              loading={loading}
+            />
+          </a>
+          <Button
+            variant="text"
+            color="secondary"
+            onClick={() => {
+              if (router.query.createdProject) {
+                router.push(`/dashboard/${router.query.createdProject}`);
+              } else {
+                router.push("/dashboard");
+              }
+            }}
+          >
+            go to dashboard
+          </Button>
+        </div>
       </div>
-    </div>
+    </AuthGuardedLayout>
   );
 };
 
