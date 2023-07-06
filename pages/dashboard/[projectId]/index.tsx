@@ -231,7 +231,7 @@ const Project = () => {
               </>
             </ProjectLayout>
           ) : (
-            <div>You aren't authorized to access this resource.</div>
+            <div>You aren`&apos;`t authorized to access this resource.</div>
           ))}
       </>
     </AuthGuardedLayout>
