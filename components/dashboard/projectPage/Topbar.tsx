@@ -6,6 +6,7 @@ import { AuthManager } from "@/firebase/AuthManager";
 import { AuthContext } from "@/contexts/AuthContext";
 import { BiUser } from "react-icons/bi";
 import { RxExit } from "react-icons/rx";
+import { LuLayoutDashboard } from "react-icons/lu";
 
 const Topbar = () => {
   const [profileVisible, setProfileVisible] = useState(false);
@@ -35,6 +36,15 @@ const Topbar = () => {
       }}
     >
       <ul className={styles.navbarBtns}>
+        <li className={styles.btnItem}>
+          <IconButton
+            onClick={() => {
+              router.push("/dashboard");
+            }}
+          >
+            <LuLayoutDashboard color={theme.palette.textColor.main} />
+          </IconButton>
+        </li>
         <li className={styles.btnItem}>
           <IconButton
             onClick={() => {

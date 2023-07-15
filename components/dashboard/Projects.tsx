@@ -31,7 +31,9 @@ const Projects = () => {
   }, [user, loading]);
 
   const projectDelete = async (id: string) => {
-    const res = await ProjectsManager.removeProject(id);
+    if (!user) return;
+    const project = projects.filter((p) => p._id === id)[0];
+    const res = await ProjectsManager.removeProject(project, user.uid);
     setProjects((prev) => prev.filter((project) => project._id !== id));
   };
 

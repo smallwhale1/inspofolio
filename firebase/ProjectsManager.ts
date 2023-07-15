@@ -146,9 +146,15 @@ export class ProjectsManager {
     }
   };
 
-  static removeProject = async (id: string): Promise<void | string> => {
+  static removeProject = async (
+    project: Project,
+    userId: string
+  ): Promise<void | string> => {
     try {
-      const docRef = doc(db, "projects", id);
+      const imgRemoveRes = await Promise.all(
+        project.imgs.map((img) => StorageManager.removeImg(img._id, userId))
+      );
+      const docRef = doc(db, "projects", project._id);
       await deleteDoc(docRef);
     } catch (err) {
       console.log(err);

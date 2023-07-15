@@ -19,6 +19,7 @@ import { IconButton, useTheme } from "@mui/material";
 import { IoMdAddCircleOutline } from "react-icons/io";
 import { BiPlus } from "react-icons/bi";
 import { StorageManager } from "@/firebase/StorageManager";
+import { Track } from "@/util/SpotifyManager";
 
 const Project = () => {
   const router = useRouter();
@@ -83,7 +84,13 @@ const Project = () => {
       case ProjectSection.PALETTE:
         return <Palette removeColor={handlePaletteRemove} project={project} />;
       case ProjectSection.MUSIC:
-        return <Music project={project} />;
+        return (
+          <Music
+            project={project}
+            onAdd={handlePlaylistAdd}
+            onRemove={handlePlaylistRemove}
+          />
+        );
     }
   };
 
@@ -141,6 +148,30 @@ const Project = () => {
       prev === null ? null : { ...prev, imgs: [...prev.imgs, ...imgs] }
     );
     setModalOpen(false);
+  };
+
+  const handlePlaylistAdd = async (track: Track) => {
+    if (!project || typeof project.playlist === "string") return;
+    // right now, only handling the list of tracks case
+    if (project.playlist.some((t) => t.id === track.id)) return;
+    await ProjectsManager.updateProject(project._id, "playlist", [
+      ...project.playlist,
+      track,
+    ]);
+    setProject({ ...project, playlist: [...project.playlist, track] });
+  };
+
+  const handlePlaylistRemove = async (trackId: string) => {
+    if (!project || typeof project.playlist === "string") return;
+    await ProjectsManager.updateProject(
+      project._id,
+      "playlist",
+      project.playlist.filter((t) => t.id !== trackId)
+    );
+    setProject({
+      ...project,
+      playlist: project.playlist.filter((t) => t.id !== trackId),
+    });
   };
 
   const getModalContent = () => {

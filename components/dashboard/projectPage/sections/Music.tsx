@@ -3,16 +3,16 @@ import { Project } from "@/models/models";
 import { useEffect, useState } from "react";
 import { SpotifyManager, SpotifyUser, Track } from "@/util/SpotifyManager";
 import { useRouter } from "next/router";
-import WebPlayback from "@/components/spotify/WebPlayback";
 import TrackCard from "@/components/spotify/TrackCard";
 import { Button, useTheme } from "@mui/material";
 import { BsSearch } from "react-icons/bs";
 import CustomModal from "../CustomModal";
 import SongSearch from "@/components/spotify/SongSearch";
-import { ProjectsManager } from "@/firebase/ProjectsManager";
 
 type Props = {
   project: Project;
+  onAdd: (track: Track) => Promise<void>;
+  onRemove: (id: string) => Promise<void>;
 };
 
 // Needs rennovation - multiple playlists => one playlist
@@ -22,24 +22,17 @@ interface TokenInfo {
   type: "client" | "authenticated";
 }
 
-const Music = ({ project }: Props) => {
+const Music = ({ project, onAdd, onRemove }: Props) => {
   const [token, setToken] = useState<TokenInfo>({
     token: null,
     type: "client",
   });
   const [user, setUser] = useState<SpotifyUser | null>(null);
   const [loading, setLoading] = useState(true);
-  const [playlist, setPlaylist] = useState<Track[]>([]);
   const [recs, setRecs] = useState<Track[]>([]);
   const [searchOpen, setSearchOpen] = useState(false);
   const router = useRouter();
   const theme = useTheme();
-
-  const handleRemove = async (url: string) => {};
-
-  useEffect(() => {
-    setPlaylist(project.playlist as Track[]);
-  }, [project.playlist]);
 
   useEffect(() => {
     const token = localStorage.getItem("access_token");
@@ -71,25 +64,6 @@ const Music = ({ project }: Props) => {
     getRecs();
   }, [project.palette]);
 
-  const onAdd = async (track: Track) => {
-    // right now, only handling the list of tracks case
-    if (playlist.some((t) => t.id === track.id)) return;
-    await ProjectsManager.updateProject(project._id, "playlist", [
-      ...playlist,
-      track,
-    ]);
-    setPlaylist((prev) => [...prev, track]);
-  };
-
-  const onRemove = async (removeId: string) => {
-    await ProjectsManager.updateProject(
-      project._id,
-      "playlist",
-      playlist.filter((t) => t.id !== removeId)
-    );
-    setPlaylist((prev) => prev.filter((t) => t.id !== removeId));
-  };
-
   // Gets the spotify user
 
   // useEffect(() => {
@@ -111,13 +85,16 @@ const Music = ({ project }: Props) => {
   //   getUser();
   // }, [router, token]);
 
+  // placeholder for now
+  if (typeof project.playlist === "string") return <></>;
+
   return (
     <div className={styles.music}>
       <div className={styles.playlist}>
         <h2 className={styles.sectionHeading}>Your Playlist</h2>
-        {playlist.length > 0 ? (
+        {project.playlist.length > 0 ? (
           <div className={styles.tracks}>
-            {playlist.map((track) => (
+            {project.playlist.map((track) => (
               <TrackCard key={track.id} track={track} onRemove={onRemove} />
             ))}
           </div>
