@@ -1,7 +1,7 @@
-import { Button, useTheme } from "@mui/material";
 import styles from "./LoadingButton.module.scss";
-import { Oval } from "react-loader-spinner";
 import { ReactElement } from "react";
+import { Button, useTheme } from "@mui/material";
+import { Oval } from "react-loader-spinner";
 
 type Props = {
   onSubmit: () => void;

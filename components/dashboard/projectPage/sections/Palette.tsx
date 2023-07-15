@@ -2,6 +2,8 @@ import { Project } from "@/models/models";
 import styles from "./Palette.module.scss";
 import { IconButton } from "@mui/material";
 import { BiX } from "react-icons/bi";
+import { useEffect } from "react";
+import { ColorManager } from "@/util/ColorManager";
 
 type Props = {
   project: Project;
@@ -13,7 +15,7 @@ const Palette = ({ project, removeColor }: Props) => {
     <div className={styles.paletteGrid}>
       {project.palette.length === 0
         ? "No colors yet"
-        : project.palette.map((color) => (
+        : ColorManager.simpleSort(project.palette).map((color) => (
             <ColorSwatch
               key={color.hex}
               color={color.hex}

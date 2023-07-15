@@ -15,6 +15,7 @@ export interface ImageCreateProps {
   onRemove: (id: string) => void;
 }
 
+// Two interfaces for whether we are creating for the first time or editing
 export interface ImageEditProps {
   onSubmit: (newImgs: ImageUpload[]) => Promise<void>;
 }
@@ -29,14 +30,16 @@ const maxImages = 20;
 
 const AddImages = ({ createProps, editProps }: ImagesProps) => {
   const theme = useTheme();
+  const [currImgs, setCurrImgs] = useState<ImageUpload[]>([]);
+
+  // callbacks for when files are dropped
   const onDropCreate = useCallback(
     (acceptedFiles: File[]) => {
       if (!acceptedFiles || acceptedFiles.length > maxImages) return;
       createProps?.onAdd(acceptedFiles);
     },
-    [createProps?.onAdd]
+    [createProps]
   );
-  const [currImgs, setCurrImgs] = useState<ImageUpload[]>([]);
 
   const onDropEdit = useCallback((acceptedFiles: File[]) => {
     if (!acceptedFiles || acceptedFiles.length > maxImages) return;
@@ -53,9 +56,7 @@ const AddImages = ({ createProps, editProps }: ImagesProps) => {
   const { getRootProps, getInputProps, isDragActive } = useDropzone({
     onDrop: createProps ? onDropCreate : onDropEdit,
     accept: {
-      "image/png": [".png"],
-      "image/jpg": [".jpg"],
-      "image/jpeg": [".jpeg"],
+      "image/*": [".png", ".jpg", ".jpeg", ".gif"],
     },
   });
 

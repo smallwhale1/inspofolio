@@ -1,17 +1,16 @@
 import styles from "./Sidebar.module.scss";
 import Logo from "../../common/Logo";
-import { Button, IconButton, useTheme } from "@mui/material";
-import { navbarLogoSize } from "@/util/constants";
+import { Source_Sans_3 } from "next/font/google";
 import { useRouter } from "next/router";
+import { useEffect, useState } from "react";
+import { useTheme } from "@mui/material";
+import { navbarLogoSize } from "@/util/constants";
 import { ProjectSection } from "@/util/enums";
 import { IconType } from "react-icons/lib";
-import { Playfair_Display } from "next/font/google";
 import { AiOutlineCamera } from "react-icons/ai";
-import { HiArrowLeft } from "react-icons/hi";
 import { CgLoadbarSound } from "react-icons/cg";
 import { BsLink45Deg } from "react-icons/bs";
 import { BiColorFill } from "react-icons/bi";
-import { useEffect, useState } from "react";
 
 type Props = {
   projectSection: ProjectSection;
@@ -25,9 +24,9 @@ const listItemData: { section: ProjectSection; icon: IconType }[] = [
   { section: ProjectSection.MUSIC, icon: CgLoadbarSound },
 ];
 
-const font = Playfair_Display({
+const font = Source_Sans_3({
   subsets: ["latin"],
-  weight: ["400", "500", "600", "700"],
+  weight: ["300", "400", "500", "600", "700"],
 });
 
 const Sidebar = ({ projectSection, setProjectSection }: Props) => {
@@ -100,7 +99,7 @@ const Sidebar = ({ projectSection, setProjectSection }: Props) => {
           </li>
         ))}
       </ul>
-      {minimized ? (
+      {/* {minimized ? (
         <IconButton
           sx={{
             margin: "0 1rem",
@@ -130,7 +129,7 @@ const Sidebar = ({ projectSection, setProjectSection }: Props) => {
         >
           back to dashboard
         </Button>
-      )}
+      )} */}
     </div>
   );
 };

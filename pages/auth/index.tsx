@@ -2,7 +2,7 @@ import styles from "../../styles/auth/auth.module.scss";
 import Image from "next/image";
 import Logo from "@/components/common/Logo";
 import Head from "next/head";
-import { Playfair_Display } from "next/font/google";
+import { Source_Sans_3 } from "next/font/google";
 import { useEffect, useRef, useState } from "react";
 import { Button, Tab, Tabs, TextField, useTheme } from "@mui/material";
 import { useRouter } from "next/router";
@@ -11,9 +11,9 @@ import { BsPlayFill } from "react-icons/bs";
 import { fadeDuration } from "@/util/constants";
 import { ProjectsManager } from "@/firebase/ProjectsManager";
 
-const font = Playfair_Display({
+const font = Source_Sans_3({
   subsets: ["latin"],
-  weight: ["400", "500", "600", "700"],
+  weight: ["300", "400", "500", "600", "700"],
 });
 
 enum AuthType {

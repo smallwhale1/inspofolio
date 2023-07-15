@@ -1,15 +1,13 @@
-import { IconButton, useTheme } from "@mui/material";
 import styles from "./Topbar.module.scss";
+import { useRouter } from "next/router";
+import { useContext, useEffect, useState } from "react";
+import { IconButton, useTheme } from "@mui/material";
+import { AuthManager } from "@/firebase/AuthManager";
+import { AuthContext } from "@/contexts/AuthContext";
 import { BiUser } from "react-icons/bi";
 import { RxExit } from "react-icons/rx";
-import { useRouter } from "next/router";
-import { AuthManager } from "@/firebase/AuthManager";
-import { useContext, useEffect, useState } from "react";
-import { AuthContext } from "@/contexts/AuthContext";
 
-type Props = {};
-
-const Topbar = (props: Props) => {
+const Topbar = () => {
   const [profileVisible, setProfileVisible] = useState(false);
   const theme = useTheme();
   const router = useRouter();

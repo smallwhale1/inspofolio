@@ -7,9 +7,9 @@ interface PlaylistOpts {
   theme: "light-hearted" | "serious";
   intensity: "chill" | "intense";
   genres: string[];
-  //
 }
 
+// to be implemented: customization of playlist
 const AddPlaylistOpts = (props: Props) => {
   return <div>AddMoodInfo</div>;
 };

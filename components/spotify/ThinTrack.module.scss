@@ -1,0 +1,48 @@
+.track {
+  display: flex;
+  justify-content: space-between;
+  gap: 1rem;
+  border-radius: 0.5rem;
+  padding: 0.75rem;
+  background-color: #ffffff;
+  border: 1px solid #eaeaea;
+
+  .left {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+  }
+
+  .trackImg {
+    border-radius: 0.5rem;
+  }
+
+  .trackName {
+    font-size: 1.1rem;
+    max-width: 200px;
+    display: -webkit-box;
+    -webkit-line-clamp: 1;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    font-weight: 500;
+  }
+
+  .trackArtist {
+    font-size: 0.8rem;
+    max-width: 200px;
+    display: -webkit-box;
+    -webkit-line-clamp: 1;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    font-weight: 400;
+  }
+
+  .btns {
+    display: flex;
+    align-items: center;
+    justify-content: flex-end;
+    gap: 0.5rem;
+  }
+}

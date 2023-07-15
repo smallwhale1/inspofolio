@@ -2,9 +2,10 @@ import styles from "../../../styles/dashboard/projectPage/projectPage.module.scs
 import ImageReferences from "@/components/dashboard/projectPage/sections/ImageReferences";
 import Links from "@/components/dashboard/projectPage/sections/Links";
 import LoadingButton from "@/components/common/LoadingButton";
-import EditModal from "@/components/dashboard/projectPage/EditModal";
+import CustomModal from "@/components/dashboard/projectPage/CustomModal";
 import AddLinks from "@/components/create/steps/AddLinks";
 import AuthGuardedLayout from "@/components/common/authGuarded/_layout";
+import AddImages from "@/components/create/steps/AddImages";
 import ProjectLayout from "@/components/dashboard/projectPage/_layout";
 import Palette from "@/components/dashboard/projectPage/sections/Palette";
 import Music from "@/components/dashboard/projectPage/sections/Music";
@@ -17,7 +18,6 @@ import { AuthContext } from "@/contexts/AuthContext";
 import { IconButton, useTheme } from "@mui/material";
 import { IoMdAddCircleOutline } from "react-icons/io";
 import { BiPlus } from "react-icons/bi";
-import AddImages from "@/components/create/steps/AddImages";
 import { StorageManager } from "@/firebase/StorageManager";
 
 const Project = () => {
@@ -225,13 +225,13 @@ const Project = () => {
                   </div>
                 )}
                 {project ? getSection() : <></>}
-                <EditModal modalOpen={modalOpen} setModalOpen={setModalOpen}>
+                <CustomModal modalOpen={modalOpen} setModalOpen={setModalOpen}>
                   {getModalContent()}
-                </EditModal>
+                </CustomModal>
               </>
             </ProjectLayout>
           ) : (
-            <div>You aren`&apos;`t authorized to access this resource.</div>
+            <div>You aren&apos;t authorized to access this resource.</div>
           ))}
       </>
     </AuthGuardedLayout>

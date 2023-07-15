@@ -36,7 +36,7 @@ const Projects = () => {
   };
 
   return (
-    <div className={styles.projects}>
+    <div className={`${styles.projects}`}>
       <div className={styles.projectsHeading}>
         <h2>Your Projects</h2>
         <Button

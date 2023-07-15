@@ -1,5 +1,5 @@
-import { ReactElement, useEffect, useState } from "react";
 import styles from "./FadePage.module.scss";
+import { ReactElement, useEffect, useState } from "react";
 
 interface FadePageProps {
   children: ReactElement;

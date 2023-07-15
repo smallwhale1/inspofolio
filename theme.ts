@@ -48,7 +48,6 @@ declare module "@mui/material/styles" {
 export const lightTheme = createTheme({
   palette: {
     primary: {
-      // main: "#57c9f2",
       main: "rgb(0, 149, 246)",
     },
     secondary: {
@@ -59,7 +58,6 @@ export const lightTheme = createTheme({
     },
     textColor: { main: "#18181b" },
     bgColor: { main: "#ffffff" },
-    // bgColor: { main: "#fbf7f0" },
     blue500: {
       main: "#3b82f6",
     },

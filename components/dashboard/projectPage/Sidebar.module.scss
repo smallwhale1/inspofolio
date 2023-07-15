@@ -2,6 +2,8 @@
 
 .sidebar {
   flex-shrink: 0;
+  height: 100%;
+  overflow-y: auto;
   display: flex;
   flex-direction: column;
   width: 250px;
@@ -12,6 +14,7 @@
   left: 0;
 
   .logoWrapper {
+    flex-shrink: 0;
     height: $navbarHeight;
     display: flex;
     align-items: center;
@@ -49,6 +52,8 @@
     }
   }
 }
+
+// Minimized sidebar
 
 .sidebarMinimized {
   width: auto;

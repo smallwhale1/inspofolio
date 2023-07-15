@@ -14,6 +14,7 @@ import {
 } from "firebase/firestore";
 import { StorageManager } from "./StorageManager";
 import { FinalColor } from "extract-colors";
+import { Track } from "@/util/SpotifyManager";
 
 export interface CreateProject {
   name: string;
@@ -33,7 +34,7 @@ interface AddProject {
   imgs: ImageData[];
   tags: Tag[];
   links: Link[];
-  playlist: string[];
+  playlist: Track[];
   shared: boolean;
 }
 

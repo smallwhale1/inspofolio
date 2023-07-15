@@ -1,11 +1,12 @@
-import { AuthContext } from "@/contexts/AuthContext";
 import { useRouter } from "next/router";
-import React, { ReactElement, useContext, useEffect } from "react";
+import { ReactElement, useContext, useEffect } from "react";
+import { AuthContext } from "@/contexts/AuthContext";
 
 interface LayoutProps {
   children: ReactElement;
 }
 
+// Protects authenticated routes
 const AuthGuardedLayout = ({ children }: LayoutProps) => {
   const { user, loading } = useContext(AuthContext);
   const router = useRouter();
@@ -15,7 +16,7 @@ const AuthGuardedLayout = ({ children }: LayoutProps) => {
     if (!user) {
       router.push("/auth");
     }
-  }, [loading]);
+  }, [loading, user, router]);
 
   return <>{user && children}</>;
 };

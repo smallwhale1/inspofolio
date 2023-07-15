@@ -3,11 +3,11 @@ import { useTheme } from "@mui/material";
 import { useRouter } from "next/router";
 import { useContext, useEffect, useState } from "react";
 import { AuthContext } from "@/contexts/AuthContext";
-import FoldingBoxesLoader from "@/components/common/animation/FoldingBoxesLoader";
+import Logo from "@/components/common/Logo";
 
 // in seconds
 const animationDuration = 1;
-const delay = 4;
+const delay = 1;
 
 export default function Home() {
   const theme = useTheme();
@@ -27,7 +27,7 @@ export default function Home() {
         }
       }, animationDuration * 1000);
     }, delay * 1000);
-  }, [user, loading]);
+  }, [user, loading, router]);
 
   return (
     <>
@@ -38,7 +38,8 @@ export default function Home() {
           transitionDuration: `${animationDuration}s`,
         }}
       >
-        <FoldingBoxesLoader />
+        <Logo color="#ffffff" fontSize={"1.5rem"} />
+        {/* <FoldingBoxesLoader /> */}
       </main>
     </>
   );

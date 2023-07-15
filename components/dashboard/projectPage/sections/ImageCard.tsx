@@ -98,9 +98,7 @@ const modalStyle = {
   display: "flex",
   justifyContent: "center",
   alignItems: "center",
-  padding: "1rem",
   boxSizing: "border-box",
-  borderRadius: "0.5rem",
 };
 
 // TODO: move this somewhere else, the masonry is messing with it

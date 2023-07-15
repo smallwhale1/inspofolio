@@ -1,13 +1,13 @@
 import styles from "../styles/linkSpotify.module.scss";
 import queryString from "query-string";
+import LoadingButton from "@/components/common/LoadingButton";
+import AuthGuardedLayout from "@/components/common/authGuarded/_layout";
 import { Button, useTheme } from "@mui/material";
 import { useRouter } from "next/router";
 import { useEffect, useState } from "react";
 import { scope } from "@/util/constants";
-import LoadingButton from "@/components/common/LoadingButton";
 import { SpotifyManager } from "@/util/SpotifyManager";
 import { BsSpotify } from "react-icons/bs";
-import AuthGuardedLayout from "@/components/common/authGuarded/_layout";
 
 const LinkSpotify = () => {
   const theme = useTheme();
@@ -28,7 +28,6 @@ const LinkSpotify = () => {
         router.push("/dashboard");
       }
     };
-
     getAccessToken();
   }, [router]);
 
@@ -40,12 +39,9 @@ const LinkSpotify = () => {
       >
         <h1>Link your Spotify Account (optional)</h1>
         <h2>
-          By linking your Spotify account, you&apos;ll be able to access your
-          playlists and add them to your projects.
+          By linking your Spotify account, you&apos;ll be able to create and
+          manage project-specific playlists.
         </h2>
-        {/* <p style={{ color: theme.palette.grey500.main }}>
-        *Streaming within the app only available to Spotify Premium users
-      </p> */}
         <div className={styles.btnContainer}>
           <a
             href={
@@ -53,8 +49,8 @@ const LinkSpotify = () => {
               queryString.stringify({
                 response_type: "code",
                 client_id: process.env.NEXT_PUBLIC_SPOTIFY_CLIENT_ID,
-                scope: scope,
                 redirect_uri: process.env.NEXT_PUBLIC_REDIRECT_URI,
+                scope: scope,
                 show_dialog: true,
               })
             }

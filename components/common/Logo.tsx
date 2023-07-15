@@ -1,6 +1,6 @@
+import styles from "./Logo.module.scss";
 import { Croissant_One } from "next/font/google";
 import { GiAirZigzag } from "react-icons/gi";
-import styles from "./Logo.module.scss";
 
 const croissant = Croissant_One({ weight: "400", subsets: ["latin"] });
 

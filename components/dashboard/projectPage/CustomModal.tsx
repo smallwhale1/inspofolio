@@ -1,5 +1,6 @@
+import { ReactElement } from "react";
 import { Box, Modal } from "@mui/material";
-import React, { ReactElement } from "react";
+import { Source_Sans_3 } from "next/font/google";
 
 type Props = {
   modalOpen: boolean;
@@ -16,16 +17,18 @@ const modalStyle = {
   width: "500px",
   bgcolor: "#ffffff",
   overflowY: "auto",
-  display: "flex",
   boxSizing: "border-box",
   borderRadius: "0.5rem",
   padding: "2rem 3rem",
-  flexDirection: "column",
-  alignItems: "center",
-  gap: "1.5rem",
 };
 
-const EditModal = ({ modalOpen, setModalOpen, children }: Props) => {
+const font = Source_Sans_3({
+  subsets: ["latin"],
+  weight: ["300", "400", "500", "600", "700"],
+});
+
+// Project editing modal
+const CustomModal = ({ modalOpen, setModalOpen, children }: Props) => {
   return (
     <Modal
       open={modalOpen}
@@ -34,9 +37,16 @@ const EditModal = ({ modalOpen, setModalOpen, children }: Props) => {
       }}
       disableAutoFocus
     >
-      <Box sx={{ ...modalStyle }}>{children}</Box>
+      <Box sx={{ ...modalStyle }}>
+        <div
+          className={`${font.className}`}
+          style={{ display: "flex", flexDirection: "column", gap: "1.5rem" }}
+        >
+          {children}
+        </div>
+      </Box>
     </Modal>
   );
 };
 
-export default EditModal;
+export default CustomModal;

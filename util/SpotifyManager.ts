@@ -1,4 +1,11 @@
 import { FinalColor } from "extract-colors";
+import queryString from "query-string";
+
+export interface SpotifyAccessClient {
+  access_token: string;
+  token_type: string;
+  expires_in: number;
+}
 
 export interface SpotifyAccess {
   access_token: string;
@@ -44,7 +51,122 @@ export interface UserPlaylists {
   items: Playlist[];
 }
 
+// Track model
+
+export interface Track {
+  album: Album;
+  artists: Artist[];
+  available_markets: string[];
+  disc_number: number;
+  duration_ms: number;
+  explicit: boolean;
+  external_urls: {
+    spotify: string;
+  };
+  href: string;
+  id: string;
+  is_playable: boolean;
+  name: string;
+  popularity: number;
+  preview_url: string | null;
+  track_number: number;
+  type: string;
+  uri: string;
+  is_local: boolean;
+}
+
+export interface SpotifyImage {
+  url: string;
+  height: number;
+  width: number;
+}
+
+export interface Artist {
+  external_urls: {
+    spotify: string;
+  };
+  href: string;
+  id: string;
+  images: SpotifyImage[];
+  name: string;
+  popularity: number;
+  type: string;
+  uri: string;
+}
+
+export interface Album {
+  album_type: string;
+  total_tracks: number;
+  available_markets: string[];
+  external_urls: {
+    spotify: string;
+  };
+  href: string;
+  id: string;
+  images: SpotifyImage[];
+  name: string;
+  release_date: string;
+  type: string;
+  uri: string;
+  genres: string[];
+  label: string;
+  popularity: number;
+  album_group: string;
+  artists: Artist[];
+}
+
 export class SpotifyManager {
+  // When the user is not logged in, uses the client flow to retrieve songs
+  static getClientToken = async (): Promise<string | undefined> => {
+    try {
+      const res = await fetch("/api/getClientToken");
+      const data = await res.json();
+      return data.access_token as string;
+    } catch (err) {
+      console.log(err);
+      return;
+    }
+  };
+
+  // To be implemented
+  static getRecommendations = async (token: string, palette: FinalColor[]) => {
+    const avgLightness =
+      palette
+        .map((color) => color.lightness)
+        .reduce((acc, curr) => acc + curr, 0) / palette.length;
+
+    const avgIntensity =
+      palette
+        .map((color) => color.intensity)
+        .reduce((acc, curr) => acc + curr, 0) / palette.length;
+
+    const minEnergy = avgIntensity > 0.6 ? 0.1 : 0;
+    const maxEnergy = avgIntensity > 0.6 ? 1 : 0.9;
+
+    const chillGenres = "pop,ambient,study,piano,chill";
+    const intenseGenres = "hip-hop,work-out,pop,dance,party";
+
+    const res = await fetch(
+      "https://api.spotify.com/v1/recommendations?" +
+        queryString.stringify({
+          limit: 10,
+          market: "US",
+          seed_genres: avgIntensity <= 0.6 ? chillGenres : intenseGenres,
+          min_energy: minEnergy,
+          max_energy: maxEnergy,
+        }),
+      {
+        method: "GET",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`,
+        },
+      }
+    );
+    const data = await res.json();
+    return data.tracks as Track[];
+  };
+
   static getUserInfo = async (token: string): Promise<SpotifyUser | string> => {
     const result = await fetch("https://api.spotify.com/v1/me", {
       method: "GET",
@@ -70,17 +192,23 @@ export class SpotifyManager {
   };
 
   // To be implemented
-  static get10Recommendations = (
-    token: string,
-    userId: string,
-    palette: FinalColor[]
-  ) => {};
-
-  // To be implemented
-  static generatePlaylist = (token: string, userId: string) => {
+  static createPlaylist = (token: string, userId: string) => {
     const query = {
       limit: 10,
     };
+  };
+
+  static transferPlayback = async (token: string, id: string) => {
+    const body = {
+      device_ids: [id],
+      play: true,
+    };
+    const url = `https://api.spotify.com/v1/me/player`;
+    const res = await fetch(url, {
+      method: "PUT",
+      headers: { Authorization: `Bearer ${token}` },
+      body: JSON.stringify(body),
+    });
   };
 
   static getUserPlaylists = async (
@@ -110,8 +238,6 @@ export class SpotifyManager {
       return data as UserPlaylists;
     }
   };
-
-  static playPlaylist = (token: string) => {};
 
   static getToken = async (code: string): Promise<SpotifyAccess> => {
     const res = await fetch(`/api/getAccessToken?code=${code}`);

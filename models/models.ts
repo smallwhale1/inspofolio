@@ -1,3 +1,4 @@
+import { Track } from "@/util/SpotifyManager";
 import { LinkType } from "@/util/enums";
 import { FinalColor } from "extract-colors";
 
@@ -36,7 +37,8 @@ export interface Project {
   links: Link[];
   palette: FinalColor[];
   tags: Tag[];
-  playlist: string[];
+  // either a playlist id for authenticated users or a list of tracks for non-authenticated users
+  playlist: Track[] | string;
   createdAt: Date;
   shared: boolean;
 }

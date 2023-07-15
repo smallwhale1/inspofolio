@@ -3,17 +3,17 @@ import AddNameDescription from "../../components/create/steps/AddNameDescription
 import AddImages from "../../components/create/steps/AddImages";
 import AddLinks from "../../components/create/steps/AddLinks";
 import AddTags from "@/components/create/steps/AddTags";
-import Image from "next/image";
 import AuthGuardedLayout from "@/components/common/authGuarded/_layout";
-import { useTheme } from "@mui/material";
+import { Source_Sans_3 } from "next/font/google";
 import { useRouter } from "next/router";
+import { useTheme } from "@mui/material";
 import { ReactNode, useContext, useEffect, useState } from "react";
-import { Playfair_Display } from "next/font/google";
 import { BsArrowRightCircle } from "react-icons/bs";
 import { fadeDuration } from "@/util/constants";
 import { CreateManager } from "@/util/CreateManager";
 import { CreateProject, ProjectsManager } from "@/firebase/ProjectsManager";
 import { AuthContext } from "@/contexts/AuthContext";
+import Image from "next/image";
 
 interface Step {
   label: string;
@@ -29,9 +29,9 @@ enum AnimationState {
 
 const animationDuration = 0.5;
 
-const font = Playfair_Display({
+const font = Source_Sans_3({
   subsets: ["latin"],
-  weight: ["400", "500", "600", "700"],
+  weight: ["300", "400", "500", "600", "700"],
 });
 
 const Create = () => {
@@ -50,7 +50,6 @@ const Create = () => {
   const [animationState, setAnimationState] = useState<AnimationState>(
     AnimationState.CENTER
   );
-  // Query parameter for first time or if they don't have any projects yet
   const router = useRouter();
   const theme = useTheme();
   const [submitting, setSubmitting] = useState(false);
@@ -85,25 +84,18 @@ const Create = () => {
   };
 
   const animateStep = (type: "next" | "prev", intermediate?: () => void) => {
-    if (type === "prev") {
-      setAnimationState(AnimationState.RIGHT);
+    setAnimationState(
+      type === "prev" ? AnimationState.RIGHT : AnimationState.LEFT
+    );
+    setTimeout(() => {
+      intermediate?.();
+      setAnimationState(
+        type === "prev" ? AnimationState.LEFT : AnimationState.RIGHT
+      );
       setTimeout(() => {
-        intermediate?.();
-        setAnimationState(AnimationState.LEFT);
-        setTimeout(() => {
-          setAnimationState(AnimationState.CENTER);
-        }, animationDuration * 1000);
+        setAnimationState(AnimationState.CENTER);
       }, animationDuration * 1000);
-    } else {
-      setAnimationState(AnimationState.LEFT);
-      setTimeout(() => {
-        intermediate?.();
-        setAnimationState(AnimationState.RIGHT);
-        setTimeout(() => {
-          setAnimationState(AnimationState.CENTER);
-        }, animationDuration * 1000);
-      }, animationDuration * 1000);
-    }
+    }, animationDuration * 1000);
   };
 
   const addImgs = (imgFiles: File[]) => {
@@ -228,12 +220,19 @@ const Create = () => {
         {/*  Overall layout for each step */}
         <div className={styles.left}>
           <div className={styles.heading}>
-            {router.query.guest && (
+            {router.query.guest ? (
               <span
                 className={styles.label}
                 style={{ color: theme.palette.primary.main }}
               >
                 demo
+              </span>
+            ) : (
+              <span
+                className={styles.label}
+                style={{ color: theme.palette.primary.main }}
+              >
+                create
               </span>
             )}
             <h2>Create a new project.</h2>
@@ -260,7 +259,7 @@ const Create = () => {
           </div>
         </div>
         {/* Image background */}
-        <div className={styles.right}>
+        {/* <div className={styles.right}>
           <Image
             className={`${styles.bgImg} ${bgImgLoaded && styles.fadeIn}`}
             src="/assets/images/inspofolio-auth-bg-1.jpg"
@@ -271,7 +270,7 @@ const Create = () => {
             }}
           />
           <div className={styles.overlay}></div>
-        </div>
+        </div> */}
       </div>
     </AuthGuardedLayout>
   );

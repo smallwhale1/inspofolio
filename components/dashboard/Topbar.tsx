@@ -1,13 +1,13 @@
 import styles from "./Topbar.module.scss";
-import { IconButton, useTheme } from "@mui/material";
 import Logo from "../common/Logo";
+import { useRouter } from "next/router";
+import { useContext, useEffect, useState } from "react";
+import { IconButton, useTheme } from "@mui/material";
+import { AuthManager } from "@/firebase/AuthManager";
+import { AuthContext } from "@/contexts/AuthContext";
+import { navbarLogoSize } from "@/util/constants";
 import { RxExit } from "react-icons/rx";
 import { BiUser } from "react-icons/bi";
-import { AuthManager } from "@/firebase/AuthManager";
-import { useRouter } from "next/router";
-import { navbarLogoSize } from "@/util/constants";
-import { useContext, useEffect, useState } from "react";
-import { AuthContext } from "@/contexts/AuthContext";
 
 interface TopbarProps {}
 

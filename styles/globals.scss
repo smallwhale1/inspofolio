@@ -16,11 +16,19 @@ a {
   text-decoration: none;
 }
 
+h1 {
+  font-weight: 600;
+}
+
+h2 {
+  font-weight: 600;
+}
+
 // Masonry styles
 
 .my-masonry-grid {
-  display: -webkit-box; /* Not needed if autoprefixing */
-  display: -ms-flexbox; /* Not needed if autoprefixing */
+  display: -webkit-box;
+  display: -ms-flexbox;
   display: flex;
   margin-left: -10px; /* gutter size offset */
   width: auto;

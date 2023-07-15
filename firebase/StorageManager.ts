@@ -7,7 +7,7 @@ import {
   uploadBytes,
 } from "firebase/storage";
 import { uid } from "uid";
-import { ImageManager } from "./ImageManager";
+import { ImageManager } from "../util/ImageManager";
 
 export class StorageManager {
   static uploadImages = async (imgs: ImageUpload[], userId: string) => {
