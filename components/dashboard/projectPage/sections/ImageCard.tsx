@@ -70,7 +70,7 @@ const ImageCard = ({ img, imgDelete }: Props) => {
         </div>
       </div>
       <Modal modalOpen={imgModalOpen} setModalOpen={setImgModalOpen}>
-        <ImageView imgSrc={img.url} />
+        <ImageView setModalOpen={setImgModalOpen} imgSrc={img.url} />
       </Modal>
     </>
   );
@@ -81,6 +81,7 @@ import React, { ReactElement } from "react";
 import ImageView from "./ImageView";
 import { BiX } from "react-icons/bi";
 import { ImageData } from "@/models/models";
+import { lightTheme } from "@/theme";
 
 type ModalProps = {
   modalOpen: boolean;
@@ -99,22 +100,14 @@ const modalStyle = {
   justifyContent: "center",
   alignItems: "center",
   boxSizing: "border-box",
+  backgroundColor: "#000000b4",
 };
 
 // TODO: move this somewhere else, the masonry is messing with it
 const Modal = ({ modalOpen, setModalOpen, children }: ModalProps) => {
   return (
     <MUIModal open={modalOpen} disableAutoFocus>
-      <div>
-        <Box sx={{ ...modalStyle }}>{children}</Box>
-        <IconButton
-          sx={{ position: "absolute", top: "1rem", right: "1rem" }}
-          className={styles.exitBtn}
-          onClick={() => setModalOpen(false)}
-        >
-          <BiX color="#ffffff" size={30} />
-        </IconButton>
-      </div>
+      <Box sx={{ ...modalStyle }}>{children}</Box>
     </MUIModal>
   );
 };

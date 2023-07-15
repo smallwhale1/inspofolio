@@ -1,2 +1,19 @@
-.imgWrapper {
+.imgFlipping {
+  animation: flip 0.5s linear;
+}
+
+.flipped {
+  scale: -1 1;
+}
+
+@keyframes flip {
+  0% {
+    transform: scaleX(1);
+  }
+  50% {
+    transform: scaleX(0);
+  }
+  100% {
+    transform: scaleX(1);
+  }
 }
