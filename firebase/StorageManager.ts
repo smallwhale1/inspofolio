@@ -14,7 +14,7 @@ export class StorageManager {
   static uploadImages = async (imgs: ImageUpload[], userId: string) => {
     try {
       const responses = await Promise.all(
-        imgs.map((img) => this.uploadSingleImgResized(img, userId))
+        imgs.map((img) => this.uploadSingleImg(img, userId))
       );
       if (responses.some((res) => res === undefined)) return;
       return responses as ImageData[];

@@ -54,14 +54,8 @@ const Auth = () => {
 
   const handleAnonymousSignIn = async () => {
     const user = await AuthManager.signInAnon();
-    // const hasProject = await ProjectsManager.userHasProject(user.user.uid);
-    // if (hasProject) {
-    //   nextRoute.current = "/dashboard";
-    //   setExiting(true);
-    // } else {
     nextRoute.current = "/create?guest=true";
     setExiting(true);
-    // }
   };
 
   const handleEmailSignIn = async () => {
