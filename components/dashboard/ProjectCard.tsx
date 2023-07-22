@@ -51,7 +51,6 @@ const ProjectCard = ({ project, deleteProject }: ProjectCardProps) => {
               alt={`${project.name}`}
               fill
               sizes="(max-width: 768px) 100vw, (max-width: 1000px) 50vw, 33vw"
-              priority
             />
           )}
         </div>
