@@ -2,7 +2,6 @@ import { useEffect, useState } from "react";
 import styles from "./ImageView.module.scss";
 import { GiHorizontalFlip } from "react-icons/gi";
 import { IconButton } from "@mui/material";
-import { BiX } from "react-icons/bi";
 import { BsX } from "react-icons/bs";
 import Image from "next/image";
 
