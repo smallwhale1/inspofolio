@@ -1,7 +1,11 @@
 import { extractColors } from "extract-colors";
 
+// Manages the images in each project
 export class ImageManager {
-  static loadImages = async (imageFiles: File[]) => {
+  // loads all images into img elements
+  static loadImages = async (
+    imageFiles: File[]
+  ): Promise<HTMLImageElement[]> => {
     try {
       const imageElements = await Promise.all(
         imageFiles.map((file) => this.loadImage(file))
@@ -13,11 +17,7 @@ export class ImageManager {
     }
   };
 
-  static getImgColors = async (img: HTMLImageElement) => {
-    const colors = await extractColors(img);
-    return colors;
-  };
-
+  // loads a single img into an img element
   static loadImage = (file: File): Promise<HTMLImageElement> => {
     return new Promise((resolve, reject) => {
       const img = new Image();
@@ -28,5 +28,11 @@ export class ImageManager {
       const url = URL.createObjectURL(file);
       img.src = url;
     });
+  };
+
+  // extracts a list of collors from an img element
+  static getImgColors = async (img: HTMLImageElement) => {
+    const colors = await extractColors(img);
+    return colors;
   };
 }

@@ -39,7 +39,6 @@ export default function Home() {
         }}
       >
         <Logo color="#ffffff" fontSize={"1.5rem"} />
-        {/* <FoldingBoxesLoader /> */}
       </main>
     </>
   );

@@ -4,10 +4,6 @@ import axios from "axios";
 import queryString from "querystring";
 import { SpotifyAccess } from "@/util/SpotifyManager";
 
-type APIError = {
-  message: string;
-};
-
 export default async function handler(
   req: NextApiRequest,
   res: NextApiResponse<SpotifyAccess | string>

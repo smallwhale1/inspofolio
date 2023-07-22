@@ -45,8 +45,8 @@ const AddImages = ({ createProps, editProps }: ImagesProps) => {
     if (!acceptedFiles || acceptedFiles.length > maxImages) return;
     setCurrImgs((prev) => [
       ...prev,
-      ...acceptedFiles.map((file, i) => ({
-        _id: ListManager.getNewId(prev, i),
+      ...acceptedFiles.map((file) => ({
+        _id: ListManager.getNewId(),
         file: file,
         previewUrl: URL.createObjectURL(file),
       })),

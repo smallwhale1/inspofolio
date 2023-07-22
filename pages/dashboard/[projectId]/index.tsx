@@ -20,6 +20,8 @@ import { IoMdAddCircleOutline } from "react-icons/io";
 import { BiPlus } from "react-icons/bi";
 import { StorageManager } from "@/firebase/StorageManager";
 import { Track } from "@/util/SpotifyManager";
+import { isErrorRes } from "@/util/errorHandling";
+import { ToastContext } from "@/contexts/ToastContext";
 
 const Project = () => {
   const router = useRouter();
@@ -34,17 +36,25 @@ const Project = () => {
   const [modalOpen, setModalOpen] = useState(false);
   const [modalSubmitting, setModalSubmitting] = useState(false);
   const theme = useTheme();
-
+  const { setToastMessage } = useContext(ToastContext);
   const [minimized, setMinimized] = useState(false);
 
   const handleImgDelete = async (id: string) => {
     if (!user || !project) return;
     const res = await StorageManager.removeImg(id, user.uid);
+    if (isErrorRes(res)) {
+      setToastMessage(res.message);
+      return;
+    }
     const projectRes = await ProjectsManager.updateProject(
       project._id,
       "imgs",
       project.imgs.filter((img) => img._id !== id)
     );
+    if (isErrorRes(projectRes)) {
+      setToastMessage(projectRes.message);
+      return;
+    }
     setProject((prev) =>
       prev
         ? { ...prev, imgs: prev?.imgs.filter((img) => img._id !== id) }
@@ -140,8 +150,8 @@ const Project = () => {
   const handleImgUpdate = async (newImgs: ImageUpload[]) => {
     if (!project || !user) return;
     const imgs = await ProjectsManager.updateImages(project, newImgs, user.uid);
-    if (typeof imgs === "string") {
-      // handle error
+    if (isErrorRes(imgs)) {
+      setToastMessage(imgs.message);
       return;
     }
     setProject((prev) =>
@@ -205,8 +215,8 @@ const Project = () => {
     if (!id || !user) return;
     const fetchProject = async () => {
       const res = await ProjectsManager.getProject(id);
-      if (typeof res === "string") {
-        // error
+      if (isErrorRes(res)) {
+        setToastMessage(res.message);
         setRouteValidity("invalid");
       } else {
         setProject(res);

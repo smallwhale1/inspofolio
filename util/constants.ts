@@ -1,7 +1,7 @@
 export const fadeDuration = 0.7;
 export const navbarLogoSize = "1rem";
 
-// spotify
+// spotify api
 export const redirectUri = process.env.NEXT_PUBLIC_REDIRECT_URI;
 export const clientId = process.env.NEXT_PUBLIC_SPOTIFY_CLIENT_ID;
 export const scope =

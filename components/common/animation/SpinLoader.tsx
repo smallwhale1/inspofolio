@@ -1,10 +1,8 @@
-import { Puff } from "react-loader-spinner";
 import styles from "./SpinLoader.module.scss";
+import { Puff } from "react-loader-spinner";
 import { useTheme } from "@mui/material";
 
-type Props = {};
-
-const SpinLoader = (props: Props) => {
+const SpinLoader = () => {
   const theme = useTheme();
   return (
     <div className={styles.loaderContainer}>

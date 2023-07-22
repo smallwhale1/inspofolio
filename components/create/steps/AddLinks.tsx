@@ -42,7 +42,7 @@ const AddLinks = ({ links, createProps, editProps }: LinkProps) => {
       setNewLinks((prev) => [
         ...prev,
         {
-          _id: ListManager.getNewId(prev),
+          _id: ListManager.getNewId(),
           url: newLink,
           title: newLinkTitle,
           type: LinkManager.extractLinkType(newLink),

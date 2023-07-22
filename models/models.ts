@@ -40,7 +40,32 @@ export interface Project {
   // either a playlist id for authenticated users or a list of tracks for non-authenticated users
   playlist: Track[] | string;
   createdAt: Date;
+  updatedAt: Date;
   shared: boolean;
+}
+
+export interface CreateProject {
+  name: string;
+  description: string;
+  imgs: ImageUpload[];
+  palette: string[];
+  links: Link[];
+  tags: Tag[];
+}
+
+// the only difference between this and Project is _id
+export interface AddProject {
+  uid: string;
+  name: string;
+  description: string;
+  palette: FinalColor[];
+  imgs: ImageData[];
+  tags: Tag[];
+  links: Link[];
+  playlist: Track[];
+  shared: boolean;
+  createdAt: Date;
+  updatedAt: Date;
 }
 
 export interface UserInfo {

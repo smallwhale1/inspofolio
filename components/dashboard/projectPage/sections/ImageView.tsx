@@ -4,16 +4,17 @@ import { GiHorizontalFlip } from "react-icons/gi";
 import { IconButton } from "@mui/material";
 import { BiX } from "react-icons/bi";
 import { BsX } from "react-icons/bs";
+import Image from "next/image";
 
 type Props = {
-  imgSrc: string;
-  imgElement?: HTMLImageElement;
+  imgElement: HTMLImageElement;
+  url: string;
   setModalOpen: (open: boolean) => void;
 };
 
 const flipDuration = 0.5;
 
-const ImageView = ({ imgSrc, imgElement, setModalOpen }: Props) => {
+const ImageView = ({ imgElement, url, setModalOpen }: Props) => {
   const [flipping, setFlipping] = useState(false);
   const [flipped, setFlipped] = useState(false);
 
@@ -28,17 +29,19 @@ const ImageView = ({ imgSrc, imgElement, setModalOpen }: Props) => {
   }, [flipping]);
 
   return (
-    <div
-      className={`${styles.imgWrapper}`}
-      style={{ height: "100%", padding: "2rem" }}
-    >
-      <img
+    <div style={{ height: "100%", padding: "2rem" }}>
+      <Image
         onClick={(e) => {
           e.stopPropagation();
         }}
-        src={imgSrc}
-        height={"100%"}
-        className={`${flipping && styles.imgFlipping} ${
+        height={window.innerHeight - 64}
+        width={
+          (imgElement.naturalWidth / imgElement.naturalHeight) *
+          (window.innerHeight - 64)
+        }
+        src={url}
+        alt="reference"
+        className={`${styles.imgReference} ${flipping && styles.imgFlipping} ${
           flipped && styles.flipped
         }`}
       />

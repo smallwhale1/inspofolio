@@ -1,4 +1,4 @@
-import React from "react";
+// for reference
 
 const embeds = () => {
   return (
@@ -93,7 +93,7 @@ const embeds = () => {
             </a>
           </p>
         </div>
-      </blockquote>{" "}
+      </blockquote>
       <script async src="//www.instagram.com/embed.js"></script>
       {/* Pinterest */}
       <iframe

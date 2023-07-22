@@ -1,9 +1,17 @@
 import { SetStateAction } from "react";
 import { ListManager } from "./ListManager";
 import { LinkManager } from "./LinkManager";
-import { CreateProject } from "@/firebase/ProjectsManager";
+import { CreateProject } from "@/models/models";
 
+/**
+ * Handles client-side management of project assets (pre-database interaction).
+ */
 export class CreateManager {
+  /**
+   * Adds new images to the project.
+   * @param acceptedFiles image files to add
+   * @param setProject state setter for the project
+   */
   static addImgs = (
     acceptedFiles: File[],
     setProject: (value: SetStateAction<CreateProject>) => void
@@ -12,8 +20,8 @@ export class CreateManager {
       ...prev,
       imgs: [
         ...prev.imgs,
-        ...acceptedFiles.map((file, i) => ({
-          _id: ListManager.getNewId(prev.imgs, i),
+        ...acceptedFiles.map((file) => ({
+          _id: ListManager.getNewId(),
           file,
           colors: [],
           previewUrl: URL.createObjectURL(file),
@@ -22,6 +30,10 @@ export class CreateManager {
     }));
   };
 
+  /**
+   * @param id Image to remove
+   * @param setProject state setter for the project
+   */
   static removeImg = (
     id: string,
     setProject: (value: SetStateAction<CreateProject>) => void
@@ -32,6 +44,12 @@ export class CreateManager {
     }));
   };
 
+  /**
+   * Adds a new link to the project.
+   * @param newLink new link to add
+   * @param setProject state setter for the project
+   * @param linkTitle title of the link
+   */
   static addLink = (
     newLink: string,
     setProject: (value: SetStateAction<CreateProject>) => void,
@@ -42,7 +60,7 @@ export class CreateManager {
       links: [
         ...prev.links,
         {
-          _id: ListManager.getNewId(prev.links),
+          _id: ListManager.getNewId(),
           url: newLink.trim(),
           title: linkTitle !== "" ? linkTitle : "Untitled Link",
           type: LinkManager.extractLinkType(newLink),
@@ -51,6 +69,11 @@ export class CreateManager {
     }));
   };
 
+  /**
+   * Removes a link from the project.
+   * @param id id of the link to remove
+   * @param setProject state setter for the project
+   */
   static removeLink = (
     id: string,
     setProject: (value: SetStateAction<CreateProject>) => void
@@ -61,6 +84,11 @@ export class CreateManager {
     }));
   };
 
+  /**
+   * Adds a new tag to the project
+   * @param newTag new tag to add
+   * @param setProject state setter for the project
+   */
   static addTag = (
     newTag: string,
     setProject: (value: SetStateAction<CreateProject>) => void
@@ -70,13 +98,18 @@ export class CreateManager {
       tags: [
         ...prev.tags,
         {
-          _id: ListManager.getNewId(prev.tags),
+          _id: ListManager.getNewId(),
           tag: newTag,
         },
       ],
     }));
   };
 
+  /**
+   * Removes a tag from the project.
+   * @param id id of the tag to remove
+   * @param setProject state setter for the project
+   */
   static removeTag = (
     id: string,
     setProject: (value: SetStateAction<CreateProject>) => void

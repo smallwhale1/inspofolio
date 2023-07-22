@@ -1,6 +1,13 @@
 import { db } from "@/config/firebase";
-import { ImageData, ImageUpload, Link, Project, Tag } from "@/models/models";
 import {
+  CreateProject,
+  AddProject,
+  ImageData,
+  ImageUpload,
+  Project,
+} from "@/models/models";
+import {
+  Timestamp,
   addDoc,
   collection,
   deleteDoc,
@@ -8,35 +15,18 @@ import {
   getDoc,
   getDocs,
   limit,
+  orderBy,
   query,
   updateDoc,
   where,
 } from "firebase/firestore";
 import { StorageManager } from "./StorageManager";
 import { FinalColor } from "extract-colors";
-import { Track } from "@/util/SpotifyManager";
-
-export interface CreateProject {
-  name: string;
-  description: string;
-  imgs: ImageUpload[];
-  palette: string[];
-  links: Link[];
-  tags: Tag[];
-}
-
-// the only difference between this and Project is _id
-interface AddProject {
-  uid: string;
-  name: string;
-  description: string;
-  palette: FinalColor[];
-  imgs: ImageData[];
-  tags: Tag[];
-  links: Link[];
-  playlist: Track[];
-  shared: boolean;
-}
+import {
+  ErrorResponse,
+  SuccessResponse,
+  isErrorRes,
+} from "@/util/errorHandling";
 
 // TODO: Create demo projects for users
 const demoProject: CreateProject = {
@@ -49,11 +39,18 @@ const demoProject: CreateProject = {
 };
 
 export class ProjectsManager {
-  static addProject = async (project: CreateProject, uid: string) => {
+  static addProject = async (
+    project: CreateProject,
+    uid: string
+  ): Promise<ErrorResponse | Project> => {
     try {
       // handle image uploads first
       const storedImgs = await StorageManager.uploadImages(project.imgs, uid);
-      if (!storedImgs) return "Failed to upload images.";
+      if (!storedImgs)
+        return {
+          status: "error",
+          message: "Failed to upload images.",
+        };
 
       const newProject: AddProject = {
         uid,
@@ -65,6 +62,8 @@ export class ProjectsManager {
         links: project.links,
         playlist: [],
         shared: false,
+        createdAt: new Date(),
+        updatedAt: new Date(),
       };
 
       const projectRef = await addDoc(collection(db, "projects"), newProject);
@@ -72,13 +71,19 @@ export class ProjectsManager {
       return {
         ...newProject,
         _id: projectRef.id,
-        createdAt: new Date(),
       } as Project;
     } catch (err) {
       if (err instanceof Error) {
-        return err.message;
+        return {
+          status: "error",
+          message: err.message,
+        };
+      } else {
+        return {
+          status: "error",
+          message: "An unknown error occured.",
+        };
       }
-      return "An unknown error occured.";
     }
   };
 
@@ -86,14 +91,28 @@ export class ProjectsManager {
     id: string,
     key: keyof Project,
     newContent: any
-  ) => {
+  ): Promise<SuccessResponse | ErrorResponse> => {
     try {
       const docRef = doc(db, "projects", id);
       await updateDoc(docRef, {
         [key]: newContent,
+        updatedAt: new Date(),
       });
+      return {
+        status: "success",
+      };
     } catch (err) {
-      console.log(err);
+      if (err instanceof Error) {
+        return {
+          status: "error",
+          message: err.message,
+        };
+      } else {
+        return {
+          status: "error",
+          message: "An unknown error occured.",
+        };
+      }
     }
   };
 
@@ -101,13 +120,17 @@ export class ProjectsManager {
     oldProject: Project,
     imgs: ImageUpload[],
     userId: string
-  ): Promise<string | ImageData[]> => {
+  ): Promise<ErrorResponse | ImageData[]> => {
     const storedImgs = await StorageManager.uploadImages(imgs, userId);
-    if (!storedImgs) return "Failed to upload images.";
+    if (!storedImgs)
+      return { status: "error", message: "Failed to upload images." };
     const imgsRes = await this.updateProject(oldProject._id, "imgs", [
       ...oldProject.imgs,
       ...storedImgs,
     ]);
+    if (isErrorRes(imgsRes)) {
+      return { status: "error", message: imgsRes.message };
+    }
     const paletteRes = await this.updateProject(
       oldProject._id,
       "palette",
@@ -118,47 +141,97 @@ export class ProjectsManager {
         ] as FinalColor[])
       )
     );
+    if (isErrorRes(paletteRes)) {
+      return { status: "error", message: paletteRes.message };
+    }
     return storedImgs;
   };
 
-  static getProjects = async (uid: string): Promise<Project[]> => {
-    const q = query(collection(db, "projects"), where("uid", "==", uid));
-    const projectsSnapshot = await getDocs(q);
-    const projects: Project[] = projectsSnapshot.docs.map(
-      (doc) => ({ ...doc.data(), _id: doc.id } as Project)
-    );
-    return projects;
+  static getProjects = async (
+    uid: string
+  ): Promise<Project[] | ErrorResponse> => {
+    try {
+      const q = query(
+        collection(db, "projects"),
+        where("uid", "==", uid),
+        orderBy("updatedAt", "desc")
+      );
+      const projectsSnapshot = await getDocs(q);
+      const projects: Project[] = projectsSnapshot.docs.map(
+        (doc) =>
+          ({
+            ...doc.data(),
+            _id: doc.id,
+            createdAt: (doc.data().createdAt as Timestamp).toDate(),
+            updatedAt: (doc.data().updatedAt as Timestamp).toDate(),
+          } as Project)
+      );
+      return projects;
+    } catch (err) {
+      if (err instanceof Error) {
+        return {
+          status: "error",
+          message: err.message,
+        };
+      } else {
+        return {
+          status: "error",
+          message: "An unknown error occured.",
+        };
+      }
+    }
   };
 
-  static getProject = async (id: string): Promise<Project | string> => {
+  static getProject = async (id: string): Promise<Project | ErrorResponse> => {
     try {
       const docRef = doc(db, "projects", id);
       const docSnap = await getDoc(docRef);
-
       if (docSnap.exists()) {
         return { ...docSnap.data(), _id: docSnap.id } as Project;
       } else {
-        return "Doc does not exist.";
+        return { status: "error", message: "Project does not exist." };
       }
     } catch (err) {
-      console.log(err);
-      return "Error.";
+      if (err instanceof Error) {
+        return {
+          status: "error",
+          message: err.message,
+        };
+      } else {
+        return {
+          status: "error",
+          message: "An unknown error occured.",
+        };
+      }
     }
   };
 
   static removeProject = async (
     project: Project,
     userId: string
-  ): Promise<void | string> => {
+  ): Promise<SuccessResponse | ErrorResponse> => {
     try {
-      const imgRemoveRes = await Promise.all(
+      await Promise.all(
         project.imgs.map((img) => StorageManager.removeImg(img._id, userId))
       );
       const docRef = doc(db, "projects", project._id);
       await deleteDoc(docRef);
+      localStorage.removeItem("projects");
+      return {
+        status: "success",
+      };
     } catch (err) {
-      console.log(err);
-      return "Error.";
+      if (err instanceof Error) {
+        return {
+          status: "error",
+          message: err.message,
+        };
+      } else {
+        return {
+          status: "error",
+          message: "An unknown error occured.",
+        };
+      }
     }
   };
 

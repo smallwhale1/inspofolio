@@ -1,18 +1,22 @@
 import Image from "next/image";
 import styles from "./ImageCard.module.scss";
 import { useEffect, useRef, useState } from "react";
+import { ImageData } from "@/models/models";
+import { IconButton } from "@mui/material";
+import { BiX } from "react-icons/bi";
 
 type Props = {
   img: ImageData;
   imgDelete: (id: string) => void;
+  onClick: (img: HTMLImageElement, url: string) => void;
 };
 
-const ImageCard = ({ img, imgDelete }: Props) => {
+const ImageCard = ({ img, imgDelete, onClick }: Props) => {
   const cardRef = useRef<HTMLDivElement>(null);
   const imgAspectRatio = useRef<number>(0);
   const [imgHeight, setImgHeight] = useState(100);
   const [imgLoaded, setImgLoaded] = useState(false);
-  const [imgModalOpen, setImgModalOpen] = useState(false);
+  const imgRef = useRef<HTMLImageElement | null>(null);
 
   useEffect(() => {
     if (!imgLoaded || !cardRef.current || !imgAspectRatio.current) return;
@@ -29,6 +33,7 @@ const ImageCard = ({ img, imgDelete }: Props) => {
   }, [imgLoaded]);
 
   const handleLoadingComplete = async (img: HTMLImageElement) => {
+    imgRef.current = img;
     const { naturalWidth, naturalHeight } = img;
     const aspectRatio = naturalHeight / naturalWidth;
     imgAspectRatio.current = aspectRatio;
@@ -40,7 +45,8 @@ const ImageCard = ({ img, imgDelete }: Props) => {
       <div
         className={styles.imgCard}
         onClick={() => {
-          setImgModalOpen(true);
+          if (!imgRef.current) return;
+          onClick(imgRef.current, img.url);
         }}
       >
         <div className={styles.imgWrapper}>
@@ -54,6 +60,7 @@ const ImageCard = ({ img, imgDelete }: Props) => {
               alt="project reference"
               className={styles.img}
               fill
+              sizes="(max-width: 768px) 100vw, (max-width: 1000px) 50vw, 33vw"
               onLoadingComplete={handleLoadingComplete}
             />
           </div>
@@ -69,46 +76,7 @@ const ImageCard = ({ img, imgDelete }: Props) => {
           </IconButton>
         </div>
       </div>
-      <Modal modalOpen={imgModalOpen} setModalOpen={setImgModalOpen}>
-        <ImageView setModalOpen={setImgModalOpen} imgSrc={img.url} />
-      </Modal>
     </>
-  );
-};
-
-import { Box, IconButton, Modal as MUIModal } from "@mui/material";
-import React, { ReactElement } from "react";
-import ImageView from "./ImageView";
-import { BiX } from "react-icons/bi";
-import { ImageData } from "@/models/models";
-import { lightTheme } from "@/theme";
-
-type ModalProps = {
-  modalOpen: boolean;
-  setModalOpen: (open: boolean) => void;
-  children: ReactElement;
-};
-
-const modalStyle = {
-  position: "absolute",
-  top: "50%",
-  left: "50%",
-  transform: "translate(-50%, -50%)",
-  height: "100vh",
-  width: "100vw",
-  display: "flex",
-  justifyContent: "center",
-  alignItems: "center",
-  boxSizing: "border-box",
-  backgroundColor: "#000000b4",
-};
-
-// TODO: move this somewhere else, the masonry is messing with it
-const Modal = ({ modalOpen, setModalOpen, children }: ModalProps) => {
-  return (
-    <MUIModal open={modalOpen} disableAutoFocus>
-      <Box sx={{ ...modalStyle }}>{children}</Box>
-    </MUIModal>
   );
 };
 

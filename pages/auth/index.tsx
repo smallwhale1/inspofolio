@@ -3,13 +3,15 @@ import Image from "next/image";
 import Logo from "@/components/common/Logo";
 import Head from "next/head";
 import { Source_Sans_3 } from "next/font/google";
-import { useEffect, useRef, useState } from "react";
+import { useContext, useEffect, useRef, useState } from "react";
 import { Button, Tab, Tabs, TextField, useTheme } from "@mui/material";
 import { useRouter } from "next/router";
 import { AuthManager } from "@/firebase/AuthManager";
 import { BsPlayFill } from "react-icons/bs";
 import { fadeDuration } from "@/util/constants";
 import { ProjectsManager } from "@/firebase/ProjectsManager";
+import { isErrorRes } from "@/util/errorHandling";
+import { ToastContext } from "@/contexts/ToastContext";
 
 const font = Source_Sans_3({
   subsets: ["latin"],
@@ -32,9 +34,14 @@ const Auth = () => {
   const nextRoute = useRef<string>("/");
   const router = useRouter();
   const theme = useTheme();
+  const { setToastMessage } = useContext(ToastContext);
 
   const handleGoogleSignIn = async () => {
     const user = await AuthManager.signInWithGoogle();
+    if (isErrorRes(user)) {
+      setToastMessage(user.message);
+      return;
+    }
     const hasProject = await ProjectsManager.userHasProject(user.user.uid);
     if (hasProject) {
       nextRoute.current = "/dashboard";
@@ -59,39 +66,36 @@ const Auth = () => {
 
   const handleEmailSignIn = async () => {
     if (email === "" || password === "") {
-      // toast message
+      setToastMessage("Email or password cannot be empty.");
       return;
     }
     if (authType === AuthType.LOGIN) {
       const res = await AuthManager.signInEmailPassword(email, password);
-      if (typeof res === "string") {
-        // error occured, toast messgae
+      if (isErrorRes(res)) {
+        setToastMessage(res.message);
+        return;
+      }
+      const hasProject = await ProjectsManager.userHasProject(res.user.uid);
+      if (hasProject) {
+        nextRoute.current = "/dashboard";
+        setExiting(true);
       } else {
-        const hasProject = await ProjectsManager.userHasProject(res.user.uid);
-        if (hasProject) {
-          nextRoute.current = "/dashboard";
-          setExiting(true);
-        } else {
-          nextRoute.current = "/create";
-          setExiting(true);
-        }
+        nextRoute.current = "/create";
+        setExiting(true);
       }
     } else {
       const res = await AuthManager.signUpEmailPassword(email, password);
-      if (typeof res === "string") {
-        // error occured, toast messgae
-      } else {
-        const signInRes = await AuthManager.signInEmailPassword(
-          email,
-          password
-        );
-        if (typeof signInRes === "string") {
-          // error occured, toast message
-        } else {
-          nextRoute.current = "/create";
-          setExiting(true);
-        }
+      if (isErrorRes(res)) {
+        setToastMessage(res.message);
+        return;
       }
+      const signInRes = await AuthManager.signInEmailPassword(email, password);
+      if (isErrorRes(signInRes)) {
+        setToastMessage(signInRes.message);
+        return;
+      }
+      nextRoute.current = "/create";
+      setExiting(true);
     }
   };
 
@@ -115,6 +119,7 @@ const Auth = () => {
         setVisible(true);
       }, 300);
     }
+    return () => setVisible(false);
   }, [bgImgLoaded]);
 
   useEffect(() => {
@@ -150,6 +155,7 @@ const Auth = () => {
           src="/assets/images/inspofolio-auth-bg-1.jpg"
           alt="buildings background"
           fill
+          sizes="100vw"
           onLoad={() => {
             setBgImgLoaded(true);
           }}
@@ -223,6 +229,7 @@ const Auth = () => {
                 <Image
                   src="/assets/google-logo.png"
                   alt="google logo"
+                  sizes="16px"
                   width={16}
                   height={16}
                 />

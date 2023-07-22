@@ -6,6 +6,8 @@ import { ProjectsManager } from "@/firebase/ProjectsManager";
 import { AuthContext } from "@/contexts/AuthContext";
 import { Project } from "@/models/models";
 import ProjectCard from "./ProjectCard";
+import { isErrorRes } from "@/util/errorHandling";
+import { ToastContext } from "@/contexts/ToastContext";
 
 /*
  * TODO: Palette merging bug
@@ -17,12 +19,17 @@ const Projects = () => {
   const { user, loading } = useContext(AuthContext);
   const [projects, setProjects] = useState<Project[]>([]);
   const [fetching, setFetching] = useState(false);
+  const { setToastMessage } = useContext(ToastContext);
 
   useEffect(() => {
     const fetchProjects = async () => {
       setFetching(true);
       if (loading || !user) return;
       const projects = await ProjectsManager.getProjects(user.uid);
+      if (isErrorRes(projects)) {
+        setToastMessage(projects.message);
+        return;
+      }
       setProjects(projects);
       setFetching(false);
     };

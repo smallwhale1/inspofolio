@@ -11,9 +11,11 @@ import { ReactNode, useContext, useEffect, useState } from "react";
 import { BsArrowRightCircle } from "react-icons/bs";
 import { fadeDuration } from "@/util/constants";
 import { CreateManager } from "@/util/CreateManager";
-import { CreateProject, ProjectsManager } from "@/firebase/ProjectsManager";
+import { ProjectsManager } from "@/firebase/ProjectsManager";
 import { AuthContext } from "@/contexts/AuthContext";
-import Image from "next/image";
+import { CreateProject } from "@/models/models";
+import { isErrorRes } from "@/util/errorHandling";
+import { ToastContext } from "@/contexts/ToastContext";
 
 interface Step {
   label: string;
@@ -36,7 +38,6 @@ const font = Source_Sans_3({
 
 const Create = () => {
   const [currStep, setCurrStep] = useState<number>(0);
-  const [bgImgLoaded, setBgImgLoaded] = useState(false);
   const [visible, setVisible] = useState(false);
   const [project, setProject] = useState<CreateProject>({
     name: "",
@@ -53,22 +54,22 @@ const Create = () => {
   const router = useRouter();
   const theme = useTheme();
   const [submitting, setSubmitting] = useState(false);
+  const { setToastMessage } = useContext(ToastContext);
 
   const handleProjectSubmit = async () => {
     if (!user) return;
     setSubmitting(true);
     const res = await ProjectsManager.addProject(project, user.uid);
-    if (typeof res === "string") {
-      // toast message
-      console.log(res);
+    if (isErrorRes(res)) {
+      setToastMessage(res.message);
+      return;
+    }
+    setSubmitting(false);
+    const accessToken = localStorage.getItem("access_token");
+    if (accessToken) {
+      router.push(`/dashboard/${res._id}`);
     } else {
-      setSubmitting(false);
-      const accessToken = localStorage.getItem("access_token");
-      if (accessToken) {
-        router.push(`/dashboard/${res._id}`);
-      } else {
-        router.push(`/linkSpotify?createdProject=${res._id}`);
-      }
+      router.push(`/linkSpotify?createdProject=${res._id}`);
     }
   };
 
@@ -258,19 +259,6 @@ const Create = () => {
             {steps[currStep].component}
           </div>
         </div>
-        {/* Image background */}
-        {/* <div className={styles.right}>
-          <Image
-            className={`${styles.bgImg} ${bgImgLoaded && styles.fadeIn}`}
-            src="/assets/images/inspofolio-auth-bg-1.jpg"
-            alt="buildings background"
-            fill
-            onLoad={() => {
-              setBgImgLoaded(true);
-            }}
-          />
-          <div className={styles.overlay}></div>
-        </div> */}
       </div>
     </AuthGuardedLayout>
   );

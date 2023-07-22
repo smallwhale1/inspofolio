@@ -5,15 +5,20 @@ export type ListItemType = {
 } & Record<string, any>;
 
 export class ListManager {
-  static getNewId = (oldList: ListItemType[], offset?: number): string => {
+  // gets a unique id for a list item
+  static getNewId = (): string => {
     return uid();
-    // const idOffset = offset ? offset : 0;
-    // const newId =
-    //   oldList.length === 0
-    //     ? offset === undefined
-    //       ? "1"
-    //       : (offset + 1).toString()
-    //     : (parseInt(oldList[oldList.length - 1]._id) + 1 + idOffset).toString();
-    // return newId;
+  };
+
+  // not in use
+  static getTemporaryId = (oldList: ListItemType[], offset?: number) => {
+    const idOffset = offset ? offset : 0;
+    const newId =
+      oldList.length === 0
+        ? offset === undefined
+          ? "1"
+          : (offset + 1).toString()
+        : (parseInt(oldList[oldList.length - 1]._id) + 1 + idOffset).toString();
+    return newId;
   };
 }
