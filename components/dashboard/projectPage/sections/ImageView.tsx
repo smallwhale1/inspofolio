@@ -18,7 +18,10 @@ const flipDuration = 0.5;
 const ImageView = ({ imgElement, url, setModalOpen }: Props) => {
   const [flipping, setFlipping] = useState(false);
   const [flipped, setFlipped] = useState(false);
-  const [imgHeight, setImgHeight] = useState(window.innerHeight - 64);
+  const getImgHeight = (): number => {
+    return window.innerHeight - 64;
+  };
+  const [imgHeight, setImgHeight] = useState(getImgHeight());
   const [showCanvas, setShowCanvas] = useState(false);
   const [showColorPicker, setShowColorPicker] = useState(false);
   const [colorPickerState, setColorPickerState] = useState<
@@ -53,9 +56,7 @@ const ImageView = ({ imgElement, url, setModalOpen }: Props) => {
 
   useEffect(() => {
     const handleResize = () => {
-      if (window.innerHeight) {
-        setImgHeight(window.innerHeight - 64);
-      }
+      setImgHeight(getImgHeight());
     };
 
     handleResize();
@@ -144,7 +145,7 @@ const ImageView = ({ imgElement, url, setModalOpen }: Props) => {
 
   return (
     <>
-      <div style={{ height: "100%", padding: "2rem", position: "relative" }}>
+      <div style={{ padding: "2rem", position: "relative" }}>
         <Image
           onClick={(e) => {
             e.stopPropagation();
@@ -162,8 +163,8 @@ const ImageView = ({ imgElement, url, setModalOpen }: Props) => {
         />
         <div
           className={`${styles.canvasWrapper} ${
-            flipping && styles.canvasFlipping
-          } ${flipped && styles.canvasFlipped}`}
+            flipping && styles.imgFlipping
+          } ${flipped && styles.flipped}`}
           style={{
             display: showCanvas ? "block" : "none",
             height: imgHeight,

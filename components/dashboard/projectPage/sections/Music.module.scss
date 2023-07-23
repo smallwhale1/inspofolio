@@ -65,3 +65,23 @@
 .sectionHeading {
   font-size: 1.25rem;
 }
+
+@media (max-width: 600px) {
+  .music {
+    .playlist {
+      .playlistHeader {
+        align-items: flex-start;
+        flex-direction: column;
+        gap: 0.5rem;
+      }
+    }
+
+    .recommended {
+      .recommendedHeader {
+        align-items: flex-start;
+        flex-direction: column;
+        gap: 0.5rem;
+      }
+    }
+  }
+}
