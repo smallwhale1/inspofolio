@@ -4,19 +4,38 @@ import LoadingButton from "@/components/common/LoadingButton";
 import AuthGuardedLayout from "@/components/common/authGuarded/_layout";
 import { Button, useTheme } from "@mui/material";
 import { useRouter } from "next/router";
-import { useEffect, useState } from "react";
+import { useContext, useEffect, useRef, useState } from "react";
 import { scope } from "@/util/constants";
 import { SpotifyManager } from "@/util/SpotifyManager";
 import { BsSpotify } from "react-icons/bs";
+import { ToastContext } from "@/contexts/ToastContext";
+
+const generateRandomString = function (length: number) {
+  let text = "";
+  const possible =
+    "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
+
+  for (let i = 0; i < length; i++) {
+    text += possible.charAt(Math.floor(Math.random() * possible.length));
+  }
+  return text;
+};
 
 const LinkSpotify = () => {
   const theme = useTheme();
   const router = useRouter();
   const [loading, setLoading] = useState(false);
   const [gettingToken, setGettingToken] = useState(false);
+  const state = useRef<string>("");
+  const { setToastMessage } = useContext(ToastContext);
 
   useEffect(() => {
-    if (!router.query.code) return;
+    if (router.query.code || router.query.state) return;
+    state.current = generateRandomString(16);
+  }, [router]);
+
+  useEffect(() => {
+    if (!router.query.code || !router.query.state) return;
     const getAccessToken = async () => {
       setGettingToken(true);
       const spotifyData = await SpotifyManager.getToken(
@@ -57,6 +76,7 @@ const LinkSpotify = () => {
                   redirect_uri: process.env.NEXT_PUBLIC_REDIRECT_URI,
                   scope: scope,
                   show_dialog: true,
+                  state: state.current,
                 })
               }
             >

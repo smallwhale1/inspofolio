@@ -169,25 +169,31 @@ const MusicAuthenticated = ({ token, project, changePlaylistType }: Props) => {
       if (typeof res !== "string") {
         const playlistId = res.id;
         playId.current = playlistId;
-        const addRes = await SpotifyManager.addTracksToPlaylist(
-          playlistId,
-          project.playlist.map((track) => track.uri),
-          token
-        );
-        if (typeof addRes !== "string") {
-          const playlist = await SpotifyManager.getPlaylist(playlistId, token);
-          if (typeof playlist !== "string") {
-            // changing playlist type from list of tracks to a spotify playlist id
-            await changePlaylistType(playlistId);
-            setPlaylistTracks(
-              playlist.tracks.items.map((track) => track.track)
+        await changePlaylistType(playlistId);
+        setPlaylist(res);
+        if (project.playlist.length > 0) {
+          const addRes = await SpotifyManager.addTracksToPlaylist(
+            playlistId,
+            project.playlist.map((track) => track.uri),
+            token
+          );
+          if (typeof addRes !== "string") {
+            const playlist = await SpotifyManager.getPlaylist(
+              playlistId,
+              token
             );
-            setPlaylist(playlist);
+            if (typeof playlist !== "string") {
+              // changing playlist type from list of tracks to a spotify playlist id
+              setPlaylistTracks(
+                playlist.tracks.items.map((track) => track.track)
+              );
+              setPlaylist(playlist);
+            } else {
+              setToastMessage(playlist);
+            }
           } else {
-            setToastMessage(playlist);
+            setToastMessage(addRes);
           }
-        } else {
-          setToastMessage(addRes);
         }
       } else {
         setToastMessage(res);
@@ -237,20 +243,23 @@ const MusicAuthenticated = ({ token, project, changePlaylistType }: Props) => {
                 </Link>
               )}
             </div>
-            {playlist && (
-              <div className={styles.tracks}>
-                {playlistTracks.map((track) => (
-                  <TrackCard
-                    key={track.id}
-                    track={track}
-                    onRemove={handlePlaylistRemoveString}
-                    handleTrackPlay={handleTrackClick}
-                    handleTrackStop={handleTrackStop}
-                    currentTrack={currentTrack}
-                  />
-                ))}
-              </div>
-            )}
+            {playlist &&
+              (playlistTracks.length > 0 ? (
+                <div className={styles.tracks}>
+                  {playlistTracks.map((track) => (
+                    <TrackCard
+                      key={track.id}
+                      track={track}
+                      onRemove={handlePlaylistRemoveString}
+                      handleTrackPlay={handleTrackClick}
+                      handleTrackStop={handleTrackStop}
+                      currentTrack={currentTrack}
+                    />
+                  ))}
+                </div>
+              ) : (
+                <p>No tracks added yet.</p>
+              ))}
           </div>
           <div className={styles.recommended}>
             <div className={styles.recommendedHeader}>

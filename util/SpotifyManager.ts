@@ -2,6 +2,18 @@ import { Project } from "@/models/models";
 import { FinalColor } from "extract-colors";
 import queryString from "query-string";
 
+// type FinalColor = {
+//   hex: string;
+//   red: number;
+//   green: number;
+//   blue: number;
+//   area: number;
+//   hue: number;
+//   saturation: number;
+//   lightness: number;
+//   intensity: number;
+// }
+
 export interface SpotifyAccessClient {
   access_token: string;
   token_type: string;

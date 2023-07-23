@@ -60,4 +60,48 @@ export class ColorManager {
 
     return colors;
   }
+
+  static hexToFinalColor = (hex: string): FinalColor => {
+    const rgb = /^#?([a-f\d]{2})([a-f\d]{2})([a-f\d]{2})$/i.exec(hex);
+
+    if (!rgb) {
+      throw new Error("Invalid hex color format.");
+    }
+
+    const red = parseInt(rgb[1], 16);
+    const green = parseInt(rgb[2], 16);
+    const blue = parseInt(rgb[3], 16);
+
+    const max = Math.max(red, green, blue);
+    const min = Math.min(red, green, blue);
+    const area = max - min;
+    const intensity = (max + min) / 2;
+
+    let hue = 0;
+    let saturation = 0;
+    let lightness = intensity;
+
+    if (area !== 0) {
+      saturation = area / (1 - Math.abs(2 * intensity - 1));
+      if (max === red) {
+        hue = (60 * ((green - blue) / area) + 360) % 360;
+      } else if (max === green) {
+        hue = (60 * ((blue - red) / area) + 120) % 360;
+      } else {
+        hue = (60 * ((red - green) / area) + 240) % 360;
+      }
+    }
+
+    return {
+      hex,
+      red,
+      green,
+      blue,
+      area,
+      hue,
+      saturation,
+      lightness,
+      intensity,
+    };
+  };
 }

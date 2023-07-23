@@ -44,6 +44,7 @@ export default function App({ Component, pageProps }: AppProps) {
             position="top-right"
             toastOptions={{
               style: {
+                fontFamily: '"Source Sans 3", sans-serif',
                 padding: "1rem",
               },
             }}

@@ -21,6 +21,9 @@ import { StorageManager } from "@/firebase/StorageManager";
 import { isErrorRes } from "@/util/errorHandling";
 import { ToastContext } from "@/contexts/ToastContext";
 import MusicManager from "@/components/dashboard/projectPage/sections/MusicManager";
+import { FinalColor } from "extract-colors";
+import { ColorManager } from "@/util/ColorManager";
+import AddColors from "@/components/create/steps/AddColors";
 
 const Project = () => {
   const router = useRouter();
@@ -123,6 +126,24 @@ const Project = () => {
     );
   };
 
+  const handlePaletteAdd = async (hex: string) => {
+    if (!project) return;
+    const newColor = ColorManager.hexToFinalColor(hex);
+    await ProjectsManager.updateProject(project._id, "palette", [
+      ...project.palette,
+      newColor,
+    ]);
+    setProject((prev) =>
+      prev
+        ? {
+            ...prev,
+            palette: [...prev.palette, newColor],
+          }
+        : null
+    );
+    setToastMessage("Successfully added color!");
+  };
+
   const handlePaletteRemove = async (hex: string) => {
     if (!project) return;
     await ProjectsManager.updateProject(
@@ -172,9 +193,9 @@ const Project = () => {
           />
         );
       case ProjectSection.PALETTE:
-        return <div>To be implemented</div>;
+        return <AddColors onAdd={handlePaletteAdd} />;
       case ProjectSection.MUSIC:
-        return <div>To be implemented</div>;
+        return <></>;
     }
   };
 

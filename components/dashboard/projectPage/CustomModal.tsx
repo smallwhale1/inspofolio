@@ -40,7 +40,12 @@ const CustomModal = ({ modalOpen, setModalOpen, children }: Props) => {
       <Box sx={{ ...modalStyle }}>
         <div
           className={`${font.className}`}
-          style={{ display: "flex", flexDirection: "column", gap: "1.5rem" }}
+          style={{
+            display: "flex",
+            flexDirection: "column",
+            gap: "1.5rem",
+            height: "100%",
+          }}
         >
           {children}
         </div>
