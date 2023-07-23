@@ -7,10 +7,19 @@ import ThinTrack from "./ThinTrack";
 interface SongSearchProps {
   accessToken?: string;
   onAdd: (track: Track) => void;
+  handleTrackPlay: (track: Track) => void;
+  handleTrackStop: (track: Track) => void;
+  currentTrack: Track | null;
 }
 
 // Search with debounce
-const SongSearch = ({ accessToken, onAdd }: SongSearchProps) => {
+const SongSearch = ({
+  accessToken,
+  onAdd,
+  handleTrackPlay,
+  handleTrackStop,
+  currentTrack,
+}: SongSearchProps) => {
   const [query, setQuery] = useState("");
   const [token, setToken] = useState<string | null>(null);
   const [isLoading, setIsLoading] = useState(false);
@@ -82,7 +91,14 @@ const SongSearch = ({ accessToken, onAdd }: SongSearchProps) => {
       ) : (
         <div className={styles.tracks}>
           {searchResults.map((track) => (
-            <ThinTrack key={track.id} track={track} onAdd={onAdd} />
+            <ThinTrack
+              key={track.id}
+              track={track}
+              onAdd={onAdd}
+              handleTrackPlay={handleTrackPlay}
+              handleTrackStop={handleTrackStop}
+              currentTrack={currentTrack}
+            />
           ))}
         </div>
       )}

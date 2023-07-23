@@ -13,10 +13,12 @@ const LinkSpotify = () => {
   const theme = useTheme();
   const router = useRouter();
   const [loading, setLoading] = useState(false);
+  const [gettingToken, setGettingToken] = useState(false);
 
   useEffect(() => {
     if (!router.query.code) return;
     const getAccessToken = async () => {
+      setGettingToken(true);
       const spotifyData = await SpotifyManager.getToken(
         router.query.code as string
       );
@@ -33,51 +35,55 @@ const LinkSpotify = () => {
 
   return (
     <AuthGuardedLayout>
-      <div
-        className={styles.linkSpotify}
-        style={{ backgroundColor: theme.palette.bgColor.main }}
-      >
-        <h1>Link your Spotify Account (optional)</h1>
-        <h2>
-          By linking your Spotify account, you&apos;ll be able to create and
-          manage project-specific playlists.
-        </h2>
-        <div className={styles.btnContainer}>
-          <a
-            href={
-              "https://accounts.spotify.com/authorize?" +
-              queryString.stringify({
-                response_type: "code",
-                client_id: process.env.NEXT_PUBLIC_SPOTIFY_CLIENT_ID,
-                redirect_uri: process.env.NEXT_PUBLIC_REDIRECT_URI,
-                scope: scope,
-                show_dialog: true,
-              })
-            }
-          >
-            <LoadingButton
-              color="secondary"
-              icon={<BsSpotify color="#00c56c" size={20} />}
-              text="connect to spotify"
-              onSubmit={() => {}}
-              loading={loading}
-            />
-          </a>
-          <Button
-            variant="text"
-            color="secondary"
-            onClick={() => {
-              if (router.query.createdProject) {
-                router.push(`/dashboard/${router.query.createdProject}`);
-              } else {
-                router.push("/dashboard");
+      {gettingToken ? (
+        <p>Successfully authenticated! Redirecting in a few moments...</p>
+      ) : (
+        <div
+          className={styles.linkSpotify}
+          style={{ backgroundColor: theme.palette.bgColor.main }}
+        >
+          <h1>Link your Spotify Account (optional)</h1>
+          <h2>
+            By linking your Spotify account, you&apos;ll be able to create and
+            manage project-specific playlists.
+          </h2>
+          <div className={styles.btnContainer}>
+            <a
+              href={
+                "https://accounts.spotify.com/authorize?" +
+                queryString.stringify({
+                  response_type: "code",
+                  client_id: process.env.NEXT_PUBLIC_SPOTIFY_CLIENT_ID,
+                  redirect_uri: process.env.NEXT_PUBLIC_REDIRECT_URI,
+                  scope: scope,
+                  show_dialog: true,
+                })
               }
-            }}
-          >
-            go to dashboard
-          </Button>
+            >
+              <LoadingButton
+                color="secondary"
+                icon={<BsSpotify color="#00c56c" size={20} />}
+                text="connect to spotify"
+                onSubmit={() => {}}
+                loading={loading}
+              />
+            </a>
+            <Button
+              variant="text"
+              color="secondary"
+              onClick={() => {
+                if (router.query.createdProject) {
+                  router.push(`/dashboard/${router.query.createdProject}`);
+                } else {
+                  router.push("/dashboard");
+                }
+              }}
+            >
+              go to dashboard
+            </Button>
+          </div>
         </div>
-      </div>
+      )}
     </AuthGuardedLayout>
   );
 };

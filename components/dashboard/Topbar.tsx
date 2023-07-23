@@ -2,12 +2,13 @@ import styles from "./Topbar.module.scss";
 import Logo from "../common/Logo";
 import { useRouter } from "next/router";
 import { useContext, useEffect, useState } from "react";
-import { IconButton, useTheme } from "@mui/material";
+import { IconButton, Tooltip, useTheme } from "@mui/material";
 import { AuthManager } from "@/firebase/AuthManager";
 import { AuthContext } from "@/contexts/AuthContext";
 import { navbarLogoSize } from "@/util/constants";
 import { RxExit } from "react-icons/rx";
 import { BiUser } from "react-icons/bi";
+import Link from "next/link";
 
 interface TopbarProps {}
 
@@ -39,17 +40,20 @@ const Topbar = ({}: TopbarProps) => {
         backgroundColor: theme.palette.bgColor.main,
       }}
     >
-      <Logo color={theme.palette.textColor.main} fontSize={navbarLogoSize} />
-
+      <Link href={"/dashboard"}>
+        <Logo color={theme.palette.textColor.main} fontSize={navbarLogoSize} />
+      </Link>
       <ul className={styles.navbarBtns}>
         <li className={styles.btnItem}>
-          <IconButton
-            onClick={() => {
-              setProfileVisible(true);
-            }}
-          >
-            <BiUser color={theme.palette.textColor.main} />
-          </IconButton>
+          <Tooltip title="User">
+            <IconButton
+              onClick={() => {
+                setProfileVisible(true);
+              }}
+            >
+              <BiUser color={theme.palette.textColor.main} />
+            </IconButton>
+          </Tooltip>
           {profileVisible && (
             <div
               onPointerDown={(e) => {
@@ -66,9 +70,11 @@ const Topbar = ({}: TopbarProps) => {
           )}
         </li>
         <li className={styles.btnItem}>
-          <IconButton onClick={handleSignOut}>
-            <RxExit color={theme.palette.textColor.main} />
-          </IconButton>
+          <Tooltip title="Sign Out">
+            <IconButton onClick={handleSignOut}>
+              <RxExit color={theme.palette.textColor.main} />
+            </IconButton>
+          </Tooltip>
         </li>
       </ul>
     </nav>

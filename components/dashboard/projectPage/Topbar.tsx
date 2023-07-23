@@ -1,7 +1,7 @@
 import styles from "./Topbar.module.scss";
 import { useRouter } from "next/router";
 import { useContext, useEffect, useState } from "react";
-import { IconButton, useTheme } from "@mui/material";
+import { IconButton, Tooltip, useTheme } from "@mui/material";
 import { AuthManager } from "@/firebase/AuthManager";
 import { AuthContext } from "@/contexts/AuthContext";
 import { BiUser } from "react-icons/bi";
@@ -37,22 +37,26 @@ const Topbar = () => {
     >
       <ul className={styles.navbarBtns}>
         <li className={styles.btnItem}>
-          <IconButton
-            onClick={() => {
-              router.push("/dashboard");
-            }}
-          >
-            <LuLayoutDashboard color={theme.palette.textColor.main} />
-          </IconButton>
+          <Tooltip title="Dashboard">
+            <IconButton
+              onClick={() => {
+                router.push("/dashboard");
+              }}
+            >
+              <LuLayoutDashboard color={theme.palette.textColor.main} />
+            </IconButton>
+          </Tooltip>
         </li>
         <li className={styles.btnItem}>
-          <IconButton
-            onClick={() => {
-              setProfileVisible(true);
-            }}
-          >
-            <BiUser color={theme.palette.textColor.main} />
-          </IconButton>
+          <Tooltip title="User">
+            <IconButton
+              onClick={() => {
+                setProfileVisible(true);
+              }}
+            >
+              <BiUser color={theme.palette.textColor.main} />
+            </IconButton>
+          </Tooltip>
           {profileVisible && (
             <div
               onPointerDown={(e) => {
@@ -69,9 +73,11 @@ const Topbar = () => {
           )}
         </li>
         <li className={styles.btnItem}>
-          <IconButton onClick={handleSignOut}>
-            <RxExit color={theme.palette.textColor.main} />
-          </IconButton>
+          <Tooltip title="Sign Out">
+            <IconButton onClick={handleSignOut}>
+              <RxExit color={theme.palette.textColor.main} />
+            </IconButton>
+          </Tooltip>
         </li>
       </ul>
     </nav>

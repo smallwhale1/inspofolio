@@ -1,3 +1,4 @@
+import { Project } from "@/models/models";
 import { FinalColor } from "extract-colors";
 import queryString from "query-string";
 
@@ -44,6 +45,11 @@ export interface Playlist {
     spotify: string;
   };
   public: boolean;
+  tracks: {
+    items: {
+      track: Track;
+    }[];
+  };
 }
 
 export interface UserPlaylists {
@@ -128,13 +134,18 @@ export class SpotifyManager {
     }
   };
 
-  // To be implemented
-  static getRecommendations = async (token: string, palette: FinalColor[]) => {
-    const avgLightness =
-      palette
-        .map((color) => color.lightness)
-        .reduce((acc, curr) => acc + curr, 0) / palette.length;
-
+  /**
+   * Fetches recommendations based on seeds
+   * @param token API token
+   * @param palette color palette
+   * @param seedTracks limit - 3
+   * @returns recommended tracks
+   */
+  static getRecommendations = async (
+    token: string,
+    palette: FinalColor[],
+    seedTracks?: string[]
+  ) => {
     const avgIntensity =
       palette
         .map((color) => color.intensity)
@@ -143,18 +154,29 @@ export class SpotifyManager {
     const minEnergy = avgIntensity > 0.6 ? 0.1 : 0;
     const maxEnergy = avgIntensity > 0.6 ? 1 : 0.9;
 
-    const chillGenres = "pop,ambient,study,piano,chill";
-    const intenseGenres = "hip-hop,work-out,pop,dance,party";
+    const chillGenres = "piano,chill";
+    const intenseGenres = "pop,dance";
 
-    const res = await fetch(
-      "https://api.spotify.com/v1/recommendations?" +
-        queryString.stringify({
+    const query = seedTracks
+      ? {
+          limit: 10,
+          market: "US",
+          seed_genres: avgIntensity <= 0.6 ? chillGenres : intenseGenres,
+          seed_tracks: seedTracks.join(","),
+          min_energy: minEnergy,
+          max_energy: maxEnergy,
+        }
+      : {
           limit: 10,
           market: "US",
           seed_genres: avgIntensity <= 0.6 ? chillGenres : intenseGenres,
           min_energy: minEnergy,
           max_energy: maxEnergy,
-        }),
+        };
+
+    const res = await fetch(
+      "https://api.spotify.com/v1/recommendations?" +
+        queryString.stringify(query),
       {
         method: "GET",
         headers: {
@@ -164,12 +186,50 @@ export class SpotifyManager {
       }
     );
     const data = await res.json();
-    console.log(data);
     return data.tracks as Track[];
   };
 
+  static getUserTopTracks = async (
+    token: string
+  ): Promise<Track[] | string> => {
+    const url = `https://api.spotify.com/v1/me/top/tracks?limit=5`;
+    const result = await fetch(url, {
+      method: "GET",
+      headers: { Authorization: `Bearer ${token}` },
+    });
+    const data = await result.json();
+    console.log(data);
+    if (data.error) {
+      try {
+        const { access_token } = await this.getNewToken();
+        localStorage.setItem("access_token", access_token);
+        const result = await fetch(url, {
+          method: "GET",
+          headers: {
+            Authorization: `Bearer ${access_token}`,
+            "Content-Type": "application/json",
+          },
+        });
+        const res = await result.json();
+        if (res.error) {
+          console.log(res);
+          return "An error occured.";
+        } else {
+          return (await result.json()) as Track[];
+        }
+      } catch (err) {
+        localStorage.removeItem("access_token");
+        localStorage.removeItem("refresh_token");
+        return "Validation failed.";
+      }
+    } else {
+      return data.items as Track[];
+    }
+  };
+
   static getUserInfo = async (token: string): Promise<SpotifyUser | string> => {
-    const result = await fetch("https://api.spotify.com/v1/me", {
+    const url = "https://api.spotify.com/v1/me";
+    const result = await fetch(url, {
       method: "GET",
       headers: { Authorization: `Bearer ${token}` },
     });
@@ -177,7 +237,8 @@ export class SpotifyManager {
     if (data.error) {
       try {
         const { access_token } = await this.getNewToken();
-        const result = await fetch("https://api.spotify.com/v1/me", {
+        localStorage.setItem("access_token", access_token);
+        const result = await fetch(url, {
           method: "GET",
           headers: { Authorization: `Bearer ${access_token}` },
         });
@@ -192,24 +253,148 @@ export class SpotifyManager {
     }
   };
 
-  // To be implemented
-  static createPlaylist = (token: string, userId: string) => {
-    const query = {
-      limit: 10,
-    };
-  };
-
-  static transferPlayback = async (token: string, id: string) => {
+  static createPlaylist = async (
+    project: Project,
+    token: string,
+    userId: string
+  ): Promise<Playlist | string> => {
     const body = {
-      device_ids: [id],
-      play: true,
+      name: `${project.name} Playlist`,
     };
-    const url = `https://api.spotify.com/v1/me/player`;
+    const url = `https://api.spotify.com/v1/users/${userId}/playlists`;
     const res = await fetch(url, {
-      method: "PUT",
+      method: "POST",
       headers: { Authorization: `Bearer ${token}` },
       body: JSON.stringify(body),
     });
+    const data = await res.json();
+    if (data.error) {
+      console.log(data.error);
+      try {
+        const { access_token } = await this.getNewToken();
+        localStorage.setItem("access_token", access_token);
+        const res = await fetch(url, {
+          method: "POST",
+          headers: { Authorization: `Bearer ${access_token}` },
+          body: JSON.stringify(body),
+        });
+        const playlist = await res.json();
+        return playlist as Playlist;
+      } catch (err) {
+        localStorage.removeItem("access_token");
+        localStorage.removeItem("refresh_token");
+        return "Validation failed.";
+      }
+    } else {
+      return data as Playlist;
+    }
+  };
+
+  static addTracksToPlaylist = async (
+    playlistId: string,
+    uris: string[],
+    token: string
+  ) => {
+    const url = `https://api.spotify.com/v1/playlists/${playlistId}/tracks?uris=${uris.join(
+      ","
+    )}`;
+    const res = await fetch(url, {
+      method: "POST",
+      headers: { Authorization: `Bearer ${token}` },
+    });
+    const data = await res.json();
+    if (data.error) {
+      console.log(data.error);
+      try {
+        const { access_token } = await this.getNewToken();
+        localStorage.setItem("access_token", access_token);
+        const res = await fetch(url, {
+          method: "POST",
+          headers: { Authorization: `Bearer ${access_token}` },
+        });
+        const apiRes = await res.json();
+        console.log(apiRes);
+      } catch (err) {
+        localStorage.removeItem("access_token");
+        localStorage.removeItem("refresh_token");
+        return "Validation failed.";
+      }
+    } else {
+      return;
+    }
+  };
+
+  static removeTrackFromPlaylist = async (
+    playlistId: string,
+    uri: string,
+    token: string
+  ) => {
+    const body = {
+      tracks: [{ uri: uri }],
+    };
+    const url = `https://api.spotify.com/v1/playlists/${playlistId}/tracks`;
+    const res = await fetch(url, {
+      method: "DELETE",
+      headers: {
+        Authorization: `Bearer ${token}`,
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify(body),
+    });
+    const data = await res.json();
+    if (data.error) {
+      console.log(data.error);
+      try {
+        const { access_token } = await this.getNewToken();
+        localStorage.setItem("access_token", access_token);
+        const res = await fetch(url, {
+          method: "DELETE",
+          headers: {
+            Authorization: `Bearer ${access_token}`,
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify(body),
+        });
+        const apiRes = await res.json();
+      } catch (err) {
+        localStorage.removeItem("access_token");
+        localStorage.removeItem("refresh_token");
+        return "Validation failed.";
+      }
+    } else {
+      return;
+    }
+  };
+
+  static getPlaylist = async (
+    playlistId: string,
+    token: string
+  ): Promise<Playlist | string> => {
+    const url = `
+    https://api.spotify.com/v1/playlists/${playlistId}?playlist_id=${playlistId}`;
+    const res = await fetch(url, {
+      method: "GET",
+      headers: { Authorization: `Bearer ${token}` },
+    });
+    const data = await res.json();
+    if (data.error) {
+      console.log(data.error);
+      try {
+        const { access_token } = await this.getNewToken();
+        localStorage.setItem("access_token", access_token);
+        const result = await fetch(url, {
+          method: "GET",
+          headers: { Authorization: `Bearer ${access_token}` },
+        });
+        return (await result.json()) as Playlist;
+      } catch (err) {
+        localStorage.removeItem("access_token");
+        localStorage.removeItem("refresh_token");
+        return "Validation failed.";
+      }
+    } else {
+      return data as Playlist;
+    }
   };
 
   static getUserPlaylists = async (
@@ -225,6 +410,7 @@ export class SpotifyManager {
       console.log(data.error);
       try {
         const { access_token } = await this.getNewToken();
+        localStorage.setItem("access_token", access_token);
         const result = await fetch(url, {
           method: "GET",
           headers: { Authorization: `Bearer ${access_token}` },
@@ -238,6 +424,19 @@ export class SpotifyManager {
     } else {
       return data as UserPlaylists;
     }
+  };
+
+  static transferPlayback = async (token: string, id: string) => {
+    const body = {
+      device_ids: [id],
+      play: true,
+    };
+    const url = `https://api.spotify.com/v1/me/player`;
+    const res = await fetch(url, {
+      method: "PUT",
+      headers: { Authorization: `Bearer ${token}` },
+      body: JSON.stringify(body),
+    });
   };
 
   static getToken = async (code: string): Promise<SpotifyAccess> => {

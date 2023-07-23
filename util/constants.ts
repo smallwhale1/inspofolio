@@ -11,3 +11,15 @@ export const scope =
   "user-top-read user-read-recently-played " +
   "user-library-modify user-library-read user-library-modify " +
   "user-modify-playback-state user-read-currently-playing user-read-playback-state";
+
+export function shuffleArray<T>(array: T[]): T[] {
+  const shuffledArray = array.slice();
+  for (let i = shuffledArray.length - 1; i > 0; i--) {
+    const randomIndex = Math.floor(Math.random() * (i + 1));
+    [shuffledArray[i], shuffledArray[randomIndex]] = [
+      shuffledArray[randomIndex],
+      shuffledArray[i],
+    ];
+  }
+  return shuffledArray;
+}

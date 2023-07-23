@@ -12,6 +12,7 @@ import { fadeDuration } from "@/util/constants";
 import { ProjectsManager } from "@/firebase/ProjectsManager";
 import { isErrorRes } from "@/util/errorHandling";
 import { ToastContext } from "@/contexts/ToastContext";
+import Link from "next/link";
 
 const font = Source_Sans_3({
   subsets: ["latin"],
@@ -113,7 +114,6 @@ const Auth = () => {
         setVisible(true);
       }, 300);
     }
-    return () => setVisible(false);
   }, [bgImgLoaded]);
 
   useEffect(() => {
@@ -122,6 +122,11 @@ const Auth = () => {
       router.push(nextRoute.current);
     }, fadeDuration * 1000);
   }, [exiting, router]);
+
+  // cleanup
+  useEffect(() => {
+    return () => setVisible(false);
+  }, []);
 
   return (
     <>
@@ -171,11 +176,13 @@ const Auth = () => {
           {/* Right side */}
           <div className={`${styles.right}`}>
             {isResponsive && (
-              <Logo
-                color={theme.palette.secondary.main}
-                fontSize={"1.5rem"}
-                hideText
-              />
+              <Link href={"/dashboard"}>
+                <Logo
+                  color={theme.palette.secondary.main}
+                  fontSize={"1.5rem"}
+                  hideText
+                />
+              </Link>
             )}
             <h2>
               {authType === AuthType.LOGIN ? "Login" : "Create an account"}

@@ -11,6 +11,7 @@ import { AiOutlineCamera } from "react-icons/ai";
 import { CgLoadbarSound } from "react-icons/cg";
 import { BsLink45Deg } from "react-icons/bs";
 import { BiColorFill } from "react-icons/bi";
+import Link from "next/link";
 
 type Props = {
   projectSection: ProjectSection;
@@ -61,11 +62,13 @@ const Sidebar = ({ projectSection, setProjectSection }: Props) => {
       }}
     >
       <div className={styles.logoWrapper}>
-        <Logo
-          color={theme.palette.textColor.main}
-          fontSize={navbarLogoSize}
-          hideText={minimized}
-        />
+        <Link href={"/dashboard"}>
+          <Logo
+            color={theme.palette.textColor.main}
+            fontSize={navbarLogoSize}
+            hideText={minimized}
+          />
+        </Link>
       </div>
       <ul className={styles.menuItems}>
         {listItemData.map((section) => (
