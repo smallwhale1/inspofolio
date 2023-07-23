@@ -201,12 +201,15 @@ const Project = () => {
 
   useEffect(() => {
     if (loading) return;
-    const id = router.asPath.split("/").pop();
-    if (!id || !user) return;
+    let id = router.asPath.split("/").pop();
+    if (id?.includes("?")) {
+      id = id.split("?")[0];
+    }
+    const finalId = id;
+    if (!finalId || !user) return;
     const fetchProject = async () => {
-      const res = await ProjectsManager.getProject(id);
+      const res = await ProjectsManager.getProject(finalId);
       if (isErrorRes(res)) {
-        setToastMessage(res.message);
         setRouteValidity("invalid");
       } else {
         setProject(res);

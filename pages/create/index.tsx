@@ -69,7 +69,8 @@ const Create = () => {
     if (accessToken) {
       router.push(`/dashboard/${res._id}`);
     } else {
-      router.push(`/linkSpotify?createdProject=${res._id}`);
+      localStorage.setItem("projectId", res._id);
+      router.push(`/linkSpotify`);
     }
   };
 

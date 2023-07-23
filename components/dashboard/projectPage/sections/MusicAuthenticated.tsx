@@ -18,6 +18,7 @@ import Link from "next/link";
 import { ToastContext } from "@/contexts/ToastContext";
 import { IoMdRefresh } from "react-icons/io";
 import { shuffleArray } from "@/util/constants";
+import { isErrorRes, isSuccessRes } from "@/util/errorHandling";
 
 type Props = {
   token: string;
@@ -70,18 +71,22 @@ const MusicAuthenticated = ({ token, project, changePlaylistType }: Props) => {
       [track.uri],
       accessToken.current
     );
-    if (typeof res !== "string") {
+    if (!isErrorRes(res)) {
+      setToastMessage("Successfully added track!");
       const updatedPlaylist = await SpotifyManager.getPlaylist(
         playId.current,
         accessToken.current
       );
-      if (typeof updatedPlaylist !== "string") {
+      if (!isErrorRes(updatedPlaylist)) {
         setPlaylist(updatedPlaylist);
         setPlaylistTracks(
           updatedPlaylist.tracks.items.map((track) => track.track)
         );
+      } else {
+        setToastMessage(updatedPlaylist.message);
       }
-      setToastMessage("Successfully added track!");
+    } else {
+      setToastMessage(res.message);
     }
   };
 
@@ -102,16 +107,15 @@ const MusicAuthenticated = ({ token, project, changePlaylistType }: Props) => {
 
   const getUser = async () => {
     const user = await SpotifyManager.getUserInfo(accessToken.current);
-    if (typeof user === "string") {
-      // error
+    if (isErrorRes(user)) {
+      localStorage.setItem("projectId", project._id);
       router.push(`/linkSpotify`);
     } else {
       const newToken = localStorage.getItem("access_token");
       if (newToken) {
         accessToken.current = newToken;
       }
-      const spotifyUser = user as SpotifyUser;
-      setUser(spotifyUser);
+      setUser(user);
     }
   };
 
@@ -126,7 +130,7 @@ const MusicAuthenticated = ({ token, project, changePlaylistType }: Props) => {
     const userTopTracks = await SpotifyManager.getUserTopTracks(
       accessToken.current
     );
-    if (typeof userTopTracks !== "string") {
+    if (!isErrorRes(userTopTracks)) {
       trackSeeds = [
         ...trackSeeds,
         ...shuffleArray(userTopTracks)
@@ -139,8 +143,12 @@ const MusicAuthenticated = ({ token, project, changePlaylistType }: Props) => {
       project.palette,
       trackSeeds
     );
-    console.log(recs);
-    setRecs(recs);
+
+    if (isErrorRes(recs)) {
+      setToastMessage(recs.message);
+    } else {
+      setRecs(recs);
+    }
     setLoadingRecs(false);
   };
 
@@ -153,7 +161,7 @@ const MusicAuthenticated = ({ token, project, changePlaylistType }: Props) => {
         project.playlist,
         accessToken.current
       );
-      if (typeof playlist !== "string") {
+      if (!isErrorRes(playlist)) {
         setPlaylistTracks(playlist.tracks.items.map((track) => track.track));
         setPlaylist(playlist);
       } else {
@@ -163,10 +171,12 @@ const MusicAuthenticated = ({ token, project, changePlaylistType }: Props) => {
           accessToken.current,
           user.id
         );
-        if (typeof res !== "string") {
+        if (!isErrorRes(res)) {
           const playlistId = res.id;
           playId.current = playlistId;
           setPlaylist(res);
+        } else {
+          setToastMessage(res.message);
         }
       }
     } else {
@@ -176,7 +186,7 @@ const MusicAuthenticated = ({ token, project, changePlaylistType }: Props) => {
         accessToken.current,
         user.id
       );
-      if (typeof res !== "string") {
+      if (!isErrorRes(res)) {
         const playlistId = res.id;
         playId.current = playlistId;
         await changePlaylistType(playlistId);
@@ -187,26 +197,26 @@ const MusicAuthenticated = ({ token, project, changePlaylistType }: Props) => {
             project.playlist.map((track) => track.uri),
             accessToken.current
           );
-          if (typeof addRes !== "string") {
+          if (isSuccessRes(addRes)) {
             const playlist = await SpotifyManager.getPlaylist(
               playlistId,
               accessToken.current
             );
-            if (typeof playlist !== "string") {
+            if (!isErrorRes(playlist)) {
               // changing playlist type from list of tracks to a spotify playlist id
               setPlaylistTracks(
                 playlist.tracks.items.map((track) => track.track)
               );
               setPlaylist(playlist);
             } else {
-              setToastMessage(playlist);
+              setToastMessage(playlist.message);
             }
           } else {
-            setToastMessage(addRes);
+            setToastMessage(addRes.message);
           }
         }
       } else {
-        setToastMessage(res);
+        setToastMessage(res.message);
       }
     }
     setLoading(false);
@@ -223,7 +233,7 @@ const MusicAuthenticated = ({ token, project, changePlaylistType }: Props) => {
   }, [user]);
 
   useEffect(() => {
-    if (loading) return;
+    if (loading || !playId.current) return;
     handleRecs();
   }, [loading]);
 

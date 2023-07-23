@@ -1,18 +1,7 @@
 import { Project } from "@/models/models";
 import { FinalColor } from "extract-colors";
 import queryString from "query-string";
-
-// type FinalColor = {
-//   hex: string;
-//   red: number;
-//   green: number;
-//   blue: number;
-//   area: number;
-//   hue: number;
-//   saturation: number;
-//   lightness: number;
-//   intensity: number;
-// }
+import { ErrorResponse, SuccessResponse } from "./errorHandling";
 
 export interface SpotifyAccessClient {
   access_token: string;
@@ -133,16 +122,243 @@ export interface Album {
   artists: Artist[];
 }
 
+interface SpotifyError {
+  error: {
+    status: number;
+    message: string;
+  };
+}
+
+export const isSpotifyError = (obj: any): obj is SpotifyError => {
+  return typeof obj === "object" && "error" in obj;
+};
+
+const apiCleanup = (spotifyError: SpotifyError): ErrorResponse => {
+  localStorage.removeItem("access_token");
+  localStorage.removeItem("refresh_token");
+  return {
+    status: "error",
+    message: spotifyError.error.message,
+  };
+};
+
 export class SpotifyManager {
-  // When the user is not logged in, uses the client flow to retrieve songs
-  static getClientToken = async (): Promise<string | undefined> => {
-    try {
-      const res = await fetch("/api/getClientToken");
+  static getUserInfo = async (
+    token: string
+  ): Promise<SpotifyUser | ErrorResponse> => {
+    const apiCall = async (tok: string) => {
+      const url = "https://api.spotify.com/v1/me";
+      const res = await fetch(url, {
+        method: "GET",
+        headers: { Authorization: `Bearer ${tok}` },
+      });
       const data = await res.json();
-      return data.access_token as string;
-    } catch (err) {
-      console.log(err);
-      return;
+      return data;
+    };
+    const data1 = await apiCall(token);
+    if (isSpotifyError(data1)) {
+      if (data1.error.status === 401) {
+        const { access_token } = await this.getNewToken();
+        localStorage.setItem("access_token", access_token);
+        const data2 = await apiCall(access_token);
+        if (isSpotifyError(data2)) {
+          return apiCleanup(data2);
+        } else {
+          return data2 as SpotifyUser;
+        }
+      } else {
+        return apiCleanup(data1);
+      }
+    } else {
+      return data1 as SpotifyUser;
+    }
+  };
+
+  static createPlaylist = async (
+    project: Project,
+    token: string,
+    userId: string
+  ): Promise<Playlist | ErrorResponse> => {
+    const apiCall = async (tok: string) => {
+      const body = {
+        name: `${project.name} Playlist`,
+      };
+      const url = `https://api.spotify.com/v1/users/${userId}/playlists`;
+      const res = await fetch(url, {
+        method: "POST",
+        headers: { Authorization: `Bearer ${tok}` },
+        body: JSON.stringify(body),
+      });
+      const data = await res.json();
+      return data;
+    };
+    const data1 = await apiCall(token);
+    if (isSpotifyError(data1)) {
+      if (data1.error.status === 401) {
+        const { access_token } = await this.getNewToken();
+        localStorage.setItem("access_token", access_token);
+        const data2 = await apiCall(access_token);
+        if (isSpotifyError(data2)) {
+          return apiCleanup(data2);
+        } else {
+          return data2 as Playlist;
+        }
+      } else {
+        return apiCleanup(data1);
+      }
+    } else {
+      return data1 as Playlist;
+    }
+  };
+
+  static getUserTopTracks = async (
+    token: string
+  ): Promise<Track[] | ErrorResponse> => {
+    // successful tracks response is data.items
+    const apiCall = async (tok: string) => {
+      const url = `https://api.spotify.com/v1/me/top/tracks?limit=5`;
+      const result = await fetch(url, {
+        method: "GET",
+        headers: { Authorization: `Bearer ${tok}` },
+      });
+      const data = await result.json();
+      return data;
+    };
+    const data1 = await apiCall(token);
+    if (isSpotifyError(data1)) {
+      if (data1.error.status === 401) {
+        const { access_token } = await this.getNewToken();
+        localStorage.setItem("access_token", access_token);
+        const data2 = await apiCall(access_token);
+        if (isSpotifyError(data2)) {
+          return apiCleanup(data2);
+        } else {
+          return data2.items as Track[];
+        }
+      } else {
+        return apiCleanup(data1);
+      }
+    } else {
+      return data1.items as Track[];
+    }
+  };
+
+  static addTracksToPlaylist = async (
+    playlistId: string,
+    uris: string[],
+    token: string
+  ): Promise<SuccessResponse | ErrorResponse> => {
+    const apiCall = async (tok: string) => {
+      const url = `https://api.spotify.com/v1/playlists/${playlistId}/tracks?uris=${uris.join(
+        ","
+      )}`;
+      const res = await fetch(url, {
+        method: "POST",
+        headers: { Authorization: `Bearer ${tok}` },
+      });
+      const data = await res.json();
+      return data;
+    };
+
+    const data1 = await apiCall(token);
+    if (isSpotifyError(data1)) {
+      if (data1.error.status === 401) {
+        const { access_token } = await this.getNewToken();
+        localStorage.setItem("access_token", access_token);
+        const data2 = await apiCall(access_token);
+        if (isSpotifyError(data2)) {
+          return apiCleanup(data2);
+        } else {
+          return {
+            status: "success",
+          };
+        }
+      } else {
+        return apiCleanup(data1);
+      }
+    } else {
+      return {
+        status: "success",
+      };
+    }
+  };
+
+  static removeTrackFromPlaylist = async (
+    playlistId: string,
+    uri: string,
+    token: string
+  ): Promise<SuccessResponse | ErrorResponse> => {
+    const apiCall = async (tok: string) => {
+      const body = {
+        tracks: [{ uri: uri }],
+      };
+      const url = `https://api.spotify.com/v1/playlists/${playlistId}/tracks`;
+      const res = await fetch(url, {
+        method: "DELETE",
+        headers: {
+          Authorization: `Bearer ${tok}`,
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(body),
+      });
+      const data = await res.json();
+      return data;
+    };
+
+    const data1 = await apiCall(token);
+    if (isSpotifyError(data1)) {
+      if (data1.error.status === 401) {
+        const { access_token } = await this.getNewToken();
+        localStorage.setItem("access_token", access_token);
+        const data2 = await apiCall(access_token);
+        if (isSpotifyError(data2)) {
+          return apiCleanup(data2);
+        } else {
+          return {
+            status: "success",
+          };
+        }
+      } else {
+        return apiCleanup(data1);
+      }
+    } else {
+      return {
+        status: "success",
+      };
+    }
+  };
+
+  static getPlaylist = async (
+    playlistId: string,
+    token: string
+  ): Promise<Playlist | ErrorResponse> => {
+    const apiCall = async (tok: string) => {
+      const url = `
+      https://api.spotify.com/v1/playlists/${playlistId}?playlist_id=${playlistId}`;
+      const res = await fetch(url, {
+        method: "GET",
+        headers: { Authorization: `Bearer ${tok}` },
+      });
+      const data = await res.json();
+      return data;
+    };
+
+    const data1 = await apiCall(token);
+    if (isSpotifyError(data1)) {
+      if (data1.error.status === 401) {
+        const { access_token } = await this.getNewToken();
+        localStorage.setItem("access_token", access_token);
+        const data2 = await apiCall(access_token);
+        if (isSpotifyError(data2)) {
+          return apiCleanup(data2);
+        } else {
+          return data2 as Playlist;
+        }
+      } else {
+        return apiCleanup(data1);
+      }
+    } else {
+      return data1 as Playlist;
     }
   };
 
@@ -157,14 +373,22 @@ export class SpotifyManager {
     token: string,
     palette: FinalColor[],
     seedTracks?: string[]
-  ) => {
+  ): Promise<Track[] | ErrorResponse> => {
     const avgIntensity =
       palette
         .map((color) => color.intensity)
         .reduce((acc, curr) => acc + curr, 0) / palette.length;
 
-    const minEnergy = avgIntensity > 0.6 ? 0.1 : 0;
-    const maxEnergy = avgIntensity > 0.6 ? 1 : 0.9;
+    const avgLightness =
+      palette
+        .map((color) => color.lightness)
+        .reduce((acc, curr) => acc + curr, 0) / palette.length;
+
+    const minEnergy = avgIntensity > 0.5 ? 0.1 : 0;
+    const maxEnergy = avgIntensity > 0.5 ? 1 : 0.9;
+    const targetEnergy = avgIntensity > 0.5 ? 0.8 : 0.3;
+
+    const targetMode = avgLightness > 0.5 ? 1 : 0;
 
     const chillGenres = "piano,chill";
     const intenseGenres = "pop,dance";
@@ -177,6 +401,8 @@ export class SpotifyManager {
           seed_tracks: seedTracks.join(","),
           min_energy: minEnergy,
           max_energy: maxEnergy,
+          target_energy: targetEnergy,
+          target_mode: targetMode,
         }
       : {
           limit: 10,
@@ -184,257 +410,75 @@ export class SpotifyManager {
           seed_genres: avgIntensity <= 0.6 ? chillGenres : intenseGenres,
           min_energy: minEnergy,
           max_energy: maxEnergy,
+          target_energy: targetEnergy,
+          target_mode: targetMode,
         };
 
-    const res = await fetch(
-      "https://api.spotify.com/v1/recommendations?" +
-        queryString.stringify(query),
-      {
-        method: "GET",
-        headers: {
-          "Content-Type": "application/json",
-          Authorization: `Bearer ${token}`,
-        },
-      }
-    );
-    const data = await res.json();
-    return data.tracks as Track[];
-  };
-
-  static getUserTopTracks = async (
-    token: string
-  ): Promise<Track[] | string> => {
-    const url = `https://api.spotify.com/v1/me/top/tracks?limit=5`;
-    const result = await fetch(url, {
-      method: "GET",
-      headers: { Authorization: `Bearer ${token}` },
-    });
-    const data = await result.json();
-    if (data.error) {
-      try {
-        const { access_token } = await this.getNewToken();
-        localStorage.setItem("access_token", access_token);
-        const result = await fetch(url, {
+    // actual data is in data.tracks
+    const apiCall = async (tok: string) => {
+      const res = await fetch(
+        "https://api.spotify.com/v1/recommendations?" +
+          queryString.stringify(query),
+        {
           method: "GET",
           headers: {
-            Authorization: `Bearer ${access_token}`,
             "Content-Type": "application/json",
+            Authorization: `Bearer ${tok}`,
           },
-        });
-        const res = await result.json();
-        if (res.error) {
-          console.log(res);
-          return "An error occured.";
-        } else {
-          return (await result.json()) as Track[];
         }
-      } catch (err) {
-        localStorage.removeItem("access_token");
-        localStorage.removeItem("refresh_token");
-        return "Validation failed.";
-      }
-    } else {
-      return data.items as Track[];
-    }
-  };
-
-  static getUserInfo = async (token: string): Promise<SpotifyUser | string> => {
-    const url = "https://api.spotify.com/v1/me";
-    const result = await fetch(url, {
-      method: "GET",
-      headers: { Authorization: `Bearer ${token}` },
-    });
-    const data = await result.json();
-    console.log("User info result", data);
-    if (data.error) {
-      try {
-        const { access_token } = await this.getNewToken();
-        localStorage.setItem("access_token", access_token);
-        const result = await fetch(url, {
-          method: "GET",
-          headers: { Authorization: `Bearer ${access_token}` },
-        });
-        return await result.json();
-      } catch (err) {
-        localStorage.removeItem("access_token");
-        localStorage.removeItem("refresh_token");
-        return "Validation failed.";
-      }
-    } else {
-      return data as SpotifyUser;
-    }
-  };
-
-  static createPlaylist = async (
-    project: Project,
-    token: string,
-    userId: string
-  ): Promise<Playlist | string> => {
-    const body = {
-      name: `${project.name} Playlist`,
+      );
+      const data = await res.json();
+      return data;
     };
-    const url = `https://api.spotify.com/v1/users/${userId}/playlists`;
-    const res = await fetch(url, {
-      method: "POST",
-      headers: { Authorization: `Bearer ${token}` },
-      body: JSON.stringify(body),
-    });
-    const data = await res.json();
-    if (data.error) {
-      console.log(data.error);
-      try {
-        const { access_token } = await this.getNewToken();
-        localStorage.setItem("access_token", access_token);
-        const res = await fetch(url, {
-          method: "POST",
-          headers: { Authorization: `Bearer ${access_token}` },
-          body: JSON.stringify(body),
-        });
-        const playlist = await res.json();
-        return playlist as Playlist;
-      } catch (err) {
-        localStorage.removeItem("access_token");
-        localStorage.removeItem("refresh_token");
-        return "Validation failed.";
-      }
-    } else {
-      return data as Playlist;
-    }
-  };
 
-  static addTracksToPlaylist = async (
-    playlistId: string,
-    uris: string[],
-    token: string
-  ) => {
-    const url = `https://api.spotify.com/v1/playlists/${playlistId}/tracks?uris=${uris.join(
-      ","
-    )}`;
-    const res = await fetch(url, {
-      method: "POST",
-      headers: { Authorization: `Bearer ${token}` },
-    });
-    const data = await res.json();
-    if (data.error) {
-      console.log(data.error);
-      try {
+    const data1 = await apiCall(token);
+    if (isSpotifyError(data1)) {
+      if (data1.error.status === 401) {
         const { access_token } = await this.getNewToken();
         localStorage.setItem("access_token", access_token);
-        const res = await fetch(url, {
-          method: "POST",
-          headers: { Authorization: `Bearer ${access_token}` },
-        });
-        const apiRes = await res.json();
-        console.log(apiRes);
-      } catch (err) {
-        localStorage.removeItem("access_token");
-        localStorage.removeItem("refresh_token");
-        return "Validation failed.";
+        const data2 = await apiCall(access_token);
+        if (isSpotifyError(data2)) {
+          return apiCleanup(data2);
+        } else {
+          return data2.tracks as Track[];
+        }
+      } else {
+        return apiCleanup(data1);
       }
     } else {
-      return;
-    }
-  };
-
-  static removeTrackFromPlaylist = async (
-    playlistId: string,
-    uri: string,
-    token: string
-  ) => {
-    const body = {
-      tracks: [{ uri: uri }],
-    };
-    const url = `https://api.spotify.com/v1/playlists/${playlistId}/tracks`;
-    const res = await fetch(url, {
-      method: "DELETE",
-      headers: {
-        Authorization: `Bearer ${token}`,
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify(body),
-    });
-    const data = await res.json();
-    if (data.error) {
-      console.log(data.error);
-      try {
-        const { access_token } = await this.getNewToken();
-        localStorage.setItem("access_token", access_token);
-        const res = await fetch(url, {
-          method: "DELETE",
-          headers: {
-            Authorization: `Bearer ${access_token}`,
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify(body),
-        });
-        const apiRes = await res.json();
-      } catch (err) {
-        localStorage.removeItem("access_token");
-        localStorage.removeItem("refresh_token");
-        return "Validation failed.";
-      }
-    } else {
-      return;
-    }
-  };
-
-  static getPlaylist = async (
-    playlistId: string,
-    token: string
-  ): Promise<Playlist | string> => {
-    const url = `
-    https://api.spotify.com/v1/playlists/${playlistId}?playlist_id=${playlistId}`;
-    const res = await fetch(url, {
-      method: "GET",
-      headers: { Authorization: `Bearer ${token}` },
-    });
-    const data = await res.json();
-    if (data.error) {
-      console.log(data.error);
-      try {
-        const { access_token } = await this.getNewToken();
-        localStorage.setItem("access_token", access_token);
-        const result = await fetch(url, {
-          method: "GET",
-          headers: { Authorization: `Bearer ${access_token}` },
-        });
-        return (await result.json()) as Playlist;
-      } catch (err) {
-        localStorage.removeItem("access_token");
-        localStorage.removeItem("refresh_token");
-        return "Validation failed.";
-      }
-    } else {
-      return data as Playlist;
+      return data1.tracks as Track[];
     }
   };
 
   static getUserPlaylists = async (
     token: string
-  ): Promise<UserPlaylists | string> => {
-    const url = `https://api.spotify.com/v1/me/playlists?limit=5`;
-    const res = await fetch(url, {
-      method: "GET",
-      headers: { Authorization: `Bearer ${token}` },
-    });
-    const data = await res.json();
-    if (data.error) {
-      console.log(data.error);
-      try {
+  ): Promise<UserPlaylists | ErrorResponse> => {
+    const apiCall = async (tok: string) => {
+      const url = `https://api.spotify.com/v1/me/playlists?limit=5`;
+      const res = await fetch(url, {
+        method: "GET",
+        headers: { Authorization: `Bearer ${token}` },
+      });
+      const data = await res.json();
+      return data;
+    };
+
+    const data1 = await apiCall(token);
+    if (isSpotifyError(data1)) {
+      if (data1.error.status === 401) {
         const { access_token } = await this.getNewToken();
         localStorage.setItem("access_token", access_token);
-        const result = await fetch(url, {
-          method: "GET",
-          headers: { Authorization: `Bearer ${access_token}` },
-        });
-        return (await result.json()) as UserPlaylists;
-      } catch (err) {
-        localStorage.removeItem("access_token");
-        localStorage.removeItem("refresh_token");
-        return "Validation failed.";
+        const data2 = await apiCall(access_token);
+        if (isSpotifyError(data2)) {
+          return apiCleanup(data2);
+        } else {
+          return data2 as UserPlaylists;
+        }
+      } else {
+        return apiCleanup(data1);
       }
     } else {
-      return data as UserPlaylists;
+      return data1 as UserPlaylists;
     }
   };
 
@@ -462,5 +506,17 @@ export class SpotifyManager {
     const res = await fetch(`/api/refreshToken?refreshToken=${refreshToken}`);
     const data = await res.json();
     return data as SpotifyRefresh;
+  };
+
+  // When the user is not logged in, uses the client flow to retrieve songs
+  static getClientToken = async (): Promise<string | undefined> => {
+    try {
+      const res = await fetch("/api/getClientToken");
+      const data = await res.json();
+      return data.access_token as string;
+    } catch (err) {
+      console.log(err);
+      return;
+    }
   };
 }

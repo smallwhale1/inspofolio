@@ -7,6 +7,11 @@
   flex-direction: column;
   gap: 2rem;
 
+  h2 {
+    font-size: 1.25rem;
+    color: #4c4c4c;
+  }
+
   .btnContainer {
     display: flex;
     gap: 1rem;

@@ -1,6 +1,6 @@
 import styles from "./Music.module.scss";
 import { Project } from "@/models/models";
-import { useEffect, useRef, useState } from "react";
+import { useContext, useEffect, useRef, useState } from "react";
 import { SpotifyManager, Track } from "@/util/SpotifyManager";
 import { useRouter } from "next/router";
 import { Button, IconButton, Tooltip, useTheme } from "@mui/material";
@@ -11,6 +11,8 @@ import SongSearch from "@/components/spotify/SongSearch";
 import LoadingButton from "@/components/common/LoadingButton";
 import { shuffleArray } from "@/util/constants";
 import { IoMdRefresh } from "react-icons/io";
+import { isErrorRes } from "@/util/errorHandling";
+import { ToastContext } from "@/contexts/ToastContext";
 
 type Props = {
   project: Project;
@@ -28,6 +30,7 @@ const Music = ({ project, onAdd, onRemove }: Props) => {
   const theme = useTheme();
   const audioRef = useRef<HTMLAudioElement | null>(null);
   const [currentTrack, setCurrentTrack] = useState<Track | null>(null);
+  const { setToastMessage } = useContext(ToastContext);
 
   const handleTrackClick = (track: Track) => {
     if (audioRef.current) {
@@ -61,7 +64,11 @@ const Music = ({ project, onAdd, onRemove }: Props) => {
           project.palette,
           shuffleArray(project.playlist.slice(0, 3).map((t) => t.id))
         );
-        setRecs(recs);
+        if (!isErrorRes(recs)) {
+          setRecs(recs);
+        } else {
+          setToastMessage(recs.message);
+        }
       }
     } else {
       const clientToken = await SpotifyManager.getClientToken();
@@ -72,7 +79,11 @@ const Music = ({ project, onAdd, onRemove }: Props) => {
           project.palette,
           shuffleArray(project.playlist.slice(0, 3).map((t) => t.id))
         );
-        setRecs(recs);
+        if (!isErrorRes(recs)) {
+          setRecs(recs);
+        } else {
+          setToastMessage(recs.message);
+        }
       }
     }
     setLoadingRecs(false);
@@ -99,7 +110,8 @@ const Music = ({ project, onAdd, onRemove }: Props) => {
           icon={<BsSpotify color="#00c56c" size={20} />}
           text="link spotify"
           onSubmit={() => {
-            router.push("/linkSpotify");
+            localStorage.setItem("projectId", project._id);
+            router.push(`/linkSpotify`);
           }}
           loading={false}
         />
@@ -116,7 +128,8 @@ const Music = ({ project, onAdd, onRemove }: Props) => {
             icon={<BsSpotify color="#00c56c" size={20} />}
             text="link spotify"
             onSubmit={() => {
-              router.push("/linkSpotify");
+              localStorage.setItem("projectId", project._id);
+              router.push(`/linkSpotify`);
             }}
             loading={false}
           />

@@ -9,6 +9,7 @@ import { lightTheme } from "@/theme";
 import { Toaster, toast } from "react-hot-toast";
 import { BiAlarmExclamation } from "react-icons/bi";
 import { ToastContext } from "@/contexts/ToastContext";
+import { Source_Sans_3 } from "next/font/google";
 
 // Toast notification
 const notify = (message: string) =>
@@ -19,6 +20,11 @@ const notify = (message: string) =>
     // Custom Icon
     icon: <BiAlarmExclamation size={20} />,
   });
+
+const font = Source_Sans_3({
+  subsets: ["latin"],
+  weight: ["300", "400", "500", "600", "700"],
+});
 
 export default function App({ Component, pageProps }: AppProps) {
   const [user, loading] = useAuthState(auth);
@@ -36,6 +42,9 @@ export default function App({ Component, pageProps }: AppProps) {
             <style jsx global>{`
               body {
                 background-color: ${bodyColor};
+              }
+              :root {
+                --dm-font: ${font.style.fontFamily};
               }
             `}</style>
           </>

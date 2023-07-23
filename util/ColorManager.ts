@@ -1,5 +1,19 @@
 import { FinalColor } from "extract-colors";
 
+// for reference
+
+// type FinalColor = {
+//   hex: string;
+//   red: number;
+//   green: number;
+//   blue: number;
+//   area: number;
+//   hue: number;
+//   saturation: number;
+//   lightness: number;
+//   intensity: number;
+// }
+
 export class ColorManager {
   static simpleSort = (colors: FinalColor[]): FinalColor[] => {
     colors.sort((a, b) => {
