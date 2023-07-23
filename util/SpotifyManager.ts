@@ -210,7 +210,6 @@ export class SpotifyManager {
       headers: { Authorization: `Bearer ${token}` },
     });
     const data = await result.json();
-    console.log(data);
     if (data.error) {
       try {
         const { access_token } = await this.getNewToken();
@@ -246,6 +245,7 @@ export class SpotifyManager {
       headers: { Authorization: `Bearer ${token}` },
     });
     const data = await result.json();
+    console.log("User info result", data);
     if (data.error) {
       try {
         const { access_token } = await this.getNewToken();
