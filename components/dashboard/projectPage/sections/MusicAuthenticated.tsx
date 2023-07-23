@@ -18,7 +18,6 @@ import Link from "next/link";
 import { ToastContext } from "@/contexts/ToastContext";
 import { IoMdRefresh } from "react-icons/io";
 import { shuffleArray } from "@/util/constants";
-import { setCommentRange } from "typescript";
 
 type Props = {
   token: string;
@@ -40,6 +39,7 @@ const MusicAuthenticated = ({ token, project, changePlaylistType }: Props) => {
   const playId = useRef<string | null>(null);
   const audioRef = useRef<HTMLAudioElement | null>(null);
   const [currentTrack, setCurrentTrack] = useState<Track | null>(null);
+  const accessToken = useRef<string>(token);
 
   const handleTrackClick = (track: Track) => {
     if (audioRef.current) {
@@ -68,12 +68,12 @@ const MusicAuthenticated = ({ token, project, changePlaylistType }: Props) => {
     const res = await SpotifyManager.addTracksToPlaylist(
       playId.current,
       [track.uri],
-      token
+      accessToken.current
     );
     if (typeof res !== "string") {
       const updatedPlaylist = await SpotifyManager.getPlaylist(
         playId.current,
-        token
+        accessToken.current
       );
       if (typeof updatedPlaylist !== "string") {
         setPlaylist(updatedPlaylist);
@@ -90,7 +90,7 @@ const MusicAuthenticated = ({ token, project, changePlaylistType }: Props) => {
     const res = await SpotifyManager.removeTrackFromPlaylist(
       playId.current,
       track.uri,
-      token
+      accessToken.current
     );
     if (typeof res !== "string") {
       setPlaylistTracks((prev) => prev.filter((t) => t.uri !== track.uri));
@@ -101,11 +101,15 @@ const MusicAuthenticated = ({ token, project, changePlaylistType }: Props) => {
   };
 
   const getUser = async () => {
-    const user = await SpotifyManager.getUserInfo(token);
+    const user = await SpotifyManager.getUserInfo(accessToken.current);
     if (typeof user === "string") {
       // error
       router.push(`/linkSpotify`);
     } else {
+      const newToken = localStorage.getItem("access_token");
+      if (newToken) {
+        accessToken.current = newToken;
+      }
       const spotifyUser = user as SpotifyUser;
       setUser(spotifyUser);
     }
@@ -119,7 +123,9 @@ const MusicAuthenticated = ({ token, project, changePlaylistType }: Props) => {
       const randomTrack = playlistTracks[randomIndex];
       trackSeeds.push(randomTrack.id);
     }
-    const userTopTracks = await SpotifyManager.getUserTopTracks(token);
+    const userTopTracks = await SpotifyManager.getUserTopTracks(
+      accessToken.current
+    );
     if (typeof userTopTracks !== "string") {
       trackSeeds = [
         ...trackSeeds,
@@ -129,7 +135,7 @@ const MusicAuthenticated = ({ token, project, changePlaylistType }: Props) => {
       ];
     }
     const recs = await SpotifyManager.getRecommendations(
-      token,
+      accessToken.current,
       project.palette,
       trackSeeds
     );
@@ -145,7 +151,7 @@ const MusicAuthenticated = ({ token, project, changePlaylistType }: Props) => {
       playId.current = project.playlist;
       const playlist = await SpotifyManager.getPlaylist(
         project.playlist,
-        token
+        accessToken.current
       );
       if (typeof playlist !== "string") {
         setPlaylistTracks(playlist.tracks.items.map((track) => track.track));
@@ -154,7 +160,7 @@ const MusicAuthenticated = ({ token, project, changePlaylistType }: Props) => {
         // an error occured, assume need to create a new playlist
         const res = await SpotifyManager.createPlaylist(
           project,
-          token,
+          accessToken.current,
           user.id
         );
         if (typeof res !== "string") {
@@ -165,7 +171,11 @@ const MusicAuthenticated = ({ token, project, changePlaylistType }: Props) => {
       }
     } else {
       // create a playlist for the user, migrate all the tracks to the playlist
-      const res = await SpotifyManager.createPlaylist(project, token, user.id);
+      const res = await SpotifyManager.createPlaylist(
+        project,
+        accessToken.current,
+        user.id
+      );
       if (typeof res !== "string") {
         const playlistId = res.id;
         playId.current = playlistId;
@@ -175,12 +185,12 @@ const MusicAuthenticated = ({ token, project, changePlaylistType }: Props) => {
           const addRes = await SpotifyManager.addTracksToPlaylist(
             playlistId,
             project.playlist.map((track) => track.uri),
-            token
+            accessToken.current
           );
           if (typeof addRes !== "string") {
             const playlist = await SpotifyManager.getPlaylist(
               playlistId,
-              token
+              accessToken.current
             );
             if (typeof playlist !== "string") {
               // changing playlist type from list of tracks to a spotify playlist id
