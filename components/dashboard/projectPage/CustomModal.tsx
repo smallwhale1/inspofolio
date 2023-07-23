@@ -6,20 +6,7 @@ type Props = {
   modalOpen: boolean;
   setModalOpen: (open: boolean) => void;
   children: ReactElement;
-};
-
-const modalStyle = {
-  position: "absolute" as "absolute",
-  top: "50%",
-  left: "50%",
-  transform: "translate(-50%, -50%)",
-  height: "80vh",
-  width: "500px",
-  bgcolor: "#ffffff",
-  overflowY: "auto",
-  boxSizing: "border-box",
-  borderRadius: "0.5rem",
-  padding: "2rem 3rem",
+  fitSize?: boolean;
 };
 
 const font = Source_Sans_3({
@@ -28,7 +15,33 @@ const font = Source_Sans_3({
 });
 
 // Project editing modal
-const CustomModal = ({ modalOpen, setModalOpen, children }: Props) => {
+const CustomModal = ({ modalOpen, setModalOpen, fitSize, children }: Props) => {
+  const modalStyle = {
+    position: "absolute" as "absolute",
+    top: "50%",
+    left: "50%",
+    transform: "translate(-50%, -50%)",
+    height: "80vh",
+    width: "500px",
+    bgcolor: "#ffffff",
+    overflowY: "auto",
+    boxSizing: "border-box",
+    borderRadius: "0.5rem",
+    padding: "2rem",
+  };
+
+  const fitSizeModalStyle = {
+    position: "absolute" as "absolute",
+    top: "50%",
+    left: "50%",
+    transform: "translate(-50%, -50%)",
+    bgcolor: "#ffffff",
+    overflowY: "auto",
+    boxSizing: "border-box",
+    borderRadius: "0.5rem",
+    padding: "2rem",
+  };
+
   return (
     <Modal
       open={modalOpen}
@@ -37,13 +50,13 @@ const CustomModal = ({ modalOpen, setModalOpen, children }: Props) => {
       }}
       disableAutoFocus
     >
-      <Box sx={{ ...modalStyle }}>
+      <Box sx={fitSize ? { ...fitSizeModalStyle } : { ...modalStyle }}>
         <div
           className={`${font.className}`}
           style={{
-            display: "flex",
-            flexDirection: "column",
-            gap: "1.5rem",
+            // display: "flex",
+            // flexDirection: "column",
+            // gap: "1.5rem",
             height: "100%",
           }}
         >

@@ -259,7 +259,11 @@ const Project = () => {
                   </div>
                 )}
                 {project ? getSection() : <></>}
-                <CustomModal modalOpen={modalOpen} setModalOpen={setModalOpen}>
+                <CustomModal
+                  modalOpen={modalOpen}
+                  setModalOpen={setModalOpen}
+                  fitSize={projectSection === ProjectSection.PALETTE}
+                >
                   {getModalContent()}
                 </CustomModal>
               </>

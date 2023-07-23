@@ -71,6 +71,6 @@ export interface AddProject {
 export interface UserInfo {
   _id: string;
   uid: string;
-  spotifyAccount: string;
   projectIds: string[];
+  imageCount: number;
 }

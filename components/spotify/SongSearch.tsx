@@ -74,7 +74,13 @@ const SongSearch = ({
   }, [query, token]);
 
   return (
-    <>
+    <div
+      style={{
+        display: "flex",
+        flexDirection: "column",
+        gap: "1.5rem",
+      }}
+    >
       <h2>Search for tracks</h2>
       <TextField
         type="text"
@@ -102,7 +108,7 @@ const SongSearch = ({
           ))}
         </div>
       )}
-    </>
+    </div>
   );
 };
 

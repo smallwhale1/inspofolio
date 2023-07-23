@@ -6,7 +6,20 @@
   scale: -1 1;
 }
 
-.imgReference {
+.canvasWrapper {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  translate: -50%, -50%;
+  transform: translate(-50%, -50%);
+}
+
+// .canvasFlipping {
+//   animation: canvasFlip 0.5s linear;
+// }
+
+.canvasFlipped {
+  transform: translate(-50%, -50%) scale(-1, 1);
 }
 
 @keyframes flip {
@@ -18,5 +31,17 @@
   }
   100% {
     transform: scaleX(1);
+  }
+}
+
+@keyframes canvasFlip {
+  0% {
+    transform: translate(-50%, -50%) scaleX(1);
+  }
+  50% {
+    transform: translate(-50%, -50%) scaleX(0);
+  }
+  100% {
+    transform: translate(-50%, -50%) scaleX(1);
   }
 }

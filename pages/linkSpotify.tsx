@@ -100,7 +100,7 @@ const LinkSpotify = () => {
                   const savedProjectId = localStorage.getItem("projectId");
                   if (savedProjectId) {
                     localStorage.removeItem("projectId");
-                    router.push(`/dashboard/${savedProjectId}`);
+                    router.push(`/dashboard/${savedProjectId}?section=music`);
                   } else {
                     router.push("/dashboard");
                   }
