@@ -133,13 +133,23 @@ export const isSpotifyError = (obj: any): obj is SpotifyError => {
   return typeof obj === "object" && "error" in obj;
 };
 
-const apiCleanup = (spotifyError: SpotifyError): ErrorResponse => {
+const apiCleanup = (
+  spotifyError: SpotifyError,
+  code?: number
+): ErrorResponse => {
+  console.log("cleanup");
   localStorage.removeItem("access_token");
   localStorage.removeItem("refresh_token");
-  return {
-    status: "error",
-    message: spotifyError.error.message,
-  };
+  return code
+    ? {
+        status: "error",
+        message: spotifyError.error.message,
+        code: code,
+      }
+    : {
+        status: "error",
+        message: spotifyError.error.message,
+      };
 };
 
 export class SpotifyManager {
@@ -199,12 +209,12 @@ export class SpotifyManager {
         localStorage.setItem("access_token", access_token);
         const data2 = await apiCall(access_token);
         if (isSpotifyError(data2)) {
-          return apiCleanup(data2);
+          return apiCleanup(data2, data2.error.status);
         } else {
           return data2 as Playlist;
         }
       } else {
-        return apiCleanup(data1);
+        return apiCleanup(data1, data1.error.status);
       }
     } else {
       return data1 as Playlist;
@@ -350,12 +360,12 @@ export class SpotifyManager {
         localStorage.setItem("access_token", access_token);
         const data2 = await apiCall(access_token);
         if (isSpotifyError(data2)) {
-          return apiCleanup(data2);
+          return apiCleanup(data2, data2.error.status);
         } else {
           return data2 as Playlist;
         }
       } else {
-        return apiCleanup(data1);
+        return apiCleanup(data1, data1.error.status);
       }
     } else {
       return data1 as Playlist;

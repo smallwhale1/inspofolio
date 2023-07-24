@@ -24,9 +24,28 @@ type Props = {
   token: string;
   project: Project;
   changePlaylistType: (playlistId: string) => Promise<void>;
+  setMusicType: React.Dispatch<
+    React.SetStateAction<
+      | {
+          token: string;
+        }
+      | "client"
+      | null
+    >
+  >;
 };
 
-const MusicAuthenticated = ({ token, project, changePlaylistType }: Props) => {
+const validEmails = new Set([
+  "sumikkowhale@gmail.com",
+  "sophie_zhang@brown.edu",
+]);
+
+const MusicAuthenticated = ({
+  token,
+  project,
+  changePlaylistType,
+  setMusicType,
+}: Props) => {
   const { setToastMessage } = useContext(ToastContext);
   const router = useRouter();
   const theme = useTheme();
@@ -111,11 +130,18 @@ const MusicAuthenticated = ({ token, project, changePlaylistType }: Props) => {
       localStorage.setItem("projectId", project._id);
       router.push(`/linkSpotify`);
     } else {
-      const newToken = localStorage.getItem("access_token");
-      if (newToken) {
-        accessToken.current = newToken;
+      if (validEmails.has(user.email)) {
+        const newToken = localStorage.getItem("access_token");
+        if (newToken) {
+          accessToken.current = newToken;
+        }
+        setUser(user);
+      } else {
+        setToastMessage(
+          "Waiting for an extended quota from Spotify, redirecting to unauthenticated flow for now..."
+        );
+        setMusicType("client");
       }
-      setUser(user);
     }
   };
 

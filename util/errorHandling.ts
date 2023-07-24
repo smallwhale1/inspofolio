@@ -3,6 +3,7 @@
 export interface ErrorResponse {
   status: "error";
   message: string;
+  code?: number;
 }
 
 export interface SuccessResponse {

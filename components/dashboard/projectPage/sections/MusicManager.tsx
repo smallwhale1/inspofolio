@@ -73,6 +73,7 @@ const MusicManager = ({ project, setProject }: Props) => {
             token={musicType.token}
             project={project}
             changePlaylistType={changePlaylistToString}
+            setMusicType={setMusicType}
           />
         )
       ) : (
