@@ -16,6 +16,7 @@ export default function Home() {
   const [exiting, setExiting] = useState(false);
 
   useEffect(() => {
+    localStorage.clear();
     if (loading) return;
     setTimeout(() => {
       setExiting(true);

@@ -457,7 +457,7 @@ export class SpotifyManager {
       const url = `https://api.spotify.com/v1/me/playlists?limit=5`;
       const res = await fetch(url, {
         method: "GET",
-        headers: { Authorization: `Bearer ${token}` },
+        headers: { Authorization: `Bearer ${tok}` },
       });
       const data = await res.json();
       return data;
