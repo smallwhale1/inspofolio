@@ -26,9 +26,9 @@ enum AuthType {
 
 const Auth = () => {
   const [bgImgLoaded, setBgImgLoaded] = useState(false);
-  const [visible, setVisible] = useState(false);
   const [isResponsive, setIsResponsive] = useState(false);
   const [authType, setAuthType] = useState<AuthType>(AuthType.SIGNUP);
+  const [visible, setVisible] = useState(false);
   const [exiting, setExiting] = useState(false);
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
@@ -166,7 +166,7 @@ const Auth = () => {
         <div className={styles.content}>
           {/* Left side */}
           {!isResponsive && (
-            <div className={`${styles.left} ${visible && styles.fadeInBottom}`}>
+            <div className={`${styles.left} ${styles.fadeInBottom}`}>
               {!isResponsive && <Logo fontSize={"1.8rem"} />}
               <p className={styles.description}>
                 A multimedia platform for managing your creative process.
@@ -176,13 +176,11 @@ const Auth = () => {
           {/* Right side */}
           <div className={`${styles.right}`}>
             {isResponsive && (
-              <Link href={"/dashboard"}>
-                <Logo
-                  color={theme.palette.secondary.main}
-                  fontSize={"1.5rem"}
-                  hideText
-                />
-              </Link>
+              <Logo
+                color={theme.palette.secondary.main}
+                fontSize={"1.5rem"}
+                hideText
+              />
             )}
             <h2>
               {authType === AuthType.LOGIN ? "Login" : "Create an account"}
